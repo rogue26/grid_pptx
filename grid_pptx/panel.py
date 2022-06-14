@@ -5,6 +5,8 @@ from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
 from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT
 from pptx.dml.color import RGBColor
 
+from .slide import GridSlide
+
 
 class Panel:
     color_dict = {
@@ -12,7 +14,8 @@ class Panel:
         'white': RGBColor(255, 255, 255),
     }
 
-    def __init__(self, slide, left, top, width, height, left_margin=0, top_margin=0, right_margin=0, bottom_margin=0,
+    def __init__(self, slide: GridSlide, left, top, width, height, left_margin=0, top_margin=0, right_margin=0,
+                 bottom_margin=0,
                  row_col=None):
         self._left = left
         self._top = top

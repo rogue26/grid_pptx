@@ -1,41 +1,53 @@
+from typing import Union
 import itertools
 
-from pptx import Presentation
-
+from .presentation import GridPresentation
 from .panel import Panel
 
 
-class Slide:
+class GridDesign:
+    def __init__(self):
+        pass
 
-    def __init__(self, template, layout: int, design: list, title=None, panel=Panel):
 
-        self.template = template
-        self.prs = Presentation(template)
-        self.slide = self.prs.slides.add_slide(self.prs.slide_layouts[layout])
-        self._title = title
-        self.layout = None
-        self.design = design
-        self.panel = panel
+class GridSlide:
+
+    def __init__(self, presentation: GridPresentation, slide):
+
+        self.presentation = presentation
+        self.slide = slide
+
+        self._design = None
         self.panels = []
 
-        self._set_title()
         self.implement_design()
 
     @property
     def title(self):
-        return self._title
+        return self.slide.shapes.title.text
 
     @title.setter
     def title(self, value: str):
-        self._title = value
+        # set title for slide object
         self.slide.shapes.title.text = value
+
+    @property
+    def design(self):
+        return self._design
+
+    @design.setter
+    def design(self, value: Union[GridDesign, list]):
+        if type(value) == list:
+            # create GridDesign object
+            pass
+
+        if type(value) == GridDesign:
+            # continue
+            pass
 
     def add_panel(self, obj):
         if issubclass(type(obj), Panel):
             self.panels.append(obj)
-
-    def save(self, filename: str):
-        self.prs.save(self.template.parents[0] / '{}.pptx'.format(filename))
 
     def add_wireframe(self):
         def recursive(panel):
@@ -85,7 +97,3 @@ class Slide:
         base_panel = Panel(self, 0, 1.2, 14.7, 6.5, row_col='row')
         self.add_panel(base_panel)
         self.loop_over_design(self.design, base_panel)
-
-    def _set_title(self):
-        if self.title is not None:
-            self.title = self.title
