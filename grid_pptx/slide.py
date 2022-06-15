@@ -1,26 +1,26 @@
-from typing import Union
+from __future__ import annotations
+from typing import TYPE_CHECKING, Union
 import itertools
+from pptx.slide import Slide
 
-from .presentation import GridPresentation
-from .panel import Panel
+from grid_pptx.components.panel import GridPanel
+from .components import Placeholder
 
-
-class GridDesign:
-    def __init__(self):
-        pass
+# imports for type hints that would normally cause circular imports
+if TYPE_CHECKING:
+    from .design import GridDesign
 
 
 class GridSlide:
+    """
+    Manages a pptx.slides.Slide instance
+    """
 
-    def __init__(self, presentation: GridPresentation, slide):
+    def __init__(self, slide: Slide, layout: list, content: list) -> None:
 
-        self.presentation = presentation
         self.slide = slide
-
-        self._design = None
-        self.panels = []
-
-        self.implement_design()
+        self.content = content
+        self.panel = Placeholder(left=0, top=0, width=1, height=1, row_col='row', sublayout=layout, gridslide=self)
 
     @property
     def title(self):
@@ -46,7 +46,7 @@ class GridSlide:
             pass
 
     def add_panel(self, obj):
-        if issubclass(type(obj), Panel):
+        if issubclass(type(obj), GridPanel):
             self.panels.append(obj)
 
     def add_wireframe(self):
@@ -72,7 +72,7 @@ class GridSlide:
             heights = [parent_panel.height for _ in spaces]
 
             for i, (subelement, l, t, w, h) in enumerate(zip(element, lefts, tops, widths, heights)):
-                new_panel = self.panel(self, l, t, w, h, row_col='col')
+                new_panel = GridPanel(self, l, t, w, h, row_col='col')
                 parent_panel.add_subpanel(new_panel)
                 if isinstance(subelement, list):
                     self.loop_over_design(subelement, new_panel)
@@ -87,13 +87,13 @@ class GridSlide:
             heights = [_ / 12 * parent_panel.height for _ in spaces]
 
             for (subelement, l, t, w, h) in zip(element, lefts, tops, widths, heights):
-                new_panel = self.panel(self, l, t, w, h, row_col='row')
+                new_panel = GridPanel(self, l, t, w, h, row_col='row')
 
                 parent_panel.add_subpanel(new_panel)
                 if isinstance(subelement, list):
                     self.loop_over_design(subelement, new_panel)
 
     def implement_design(self):
-        base_panel = Panel(self, 0, 1.2, 14.7, 6.5, row_col='row')
+        base_panel = GridPanel(self, 0, 1.2, 14.7, 6.5, row_col='row')
         self.add_panel(base_panel)
         self.loop_over_design(self.design, base_panel)
