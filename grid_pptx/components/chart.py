@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING
 from .panel import GridPanel
 
@@ -5,8 +6,9 @@ from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_TICK_MARK, XL_TICK_LABEL_POSITION
 from pptx.util import Pt
 
+# imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
-    from grid_pptx.slide import GridSlide
+    from grid_pptx import GridSlide
 
 
 class Chart(GridPanel):
@@ -26,7 +28,7 @@ class Chart(GridPanel):
         'none': XL_TICK_LABEL_POSITION.NONE,
     }
 
-    def __init__(self, *, df, **kwargs):
+    def __init__(self, *, df, **kwargs) -> None:
         super().__init__(**kwargs)
 
         self.df = df
@@ -66,7 +68,7 @@ class Chart(GridPanel):
         for column in self.df.columns:
             self.chart_data.add_series(column, self.df[column])
 
-    def configure(self, gridslide: GridSlide) -> None:
+    def add_to_slide(self, gridslide: GridSlide) -> None:
         slide = gridslide.slide
         chart = slide.shapes.add_chart(
             self.chart_type, self.x, self.y, self.cx, self.cy, self.chart_data

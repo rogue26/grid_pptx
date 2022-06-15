@@ -10,6 +10,6 @@ from pptx.dml.color import RGBColor
 
 
 class Image(GridPanel):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 

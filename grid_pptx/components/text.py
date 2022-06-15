@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING
 from .panel import GridPanel
 
@@ -5,12 +6,13 @@ from pptx.util import Pt
 from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
 from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT
 
+# imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
     from grid_pptx.slide import GridSlide
 
 
 class Text(GridPanel):
-    def __init__(self, text: str, **kwargs):
+    def __init__(self, text: str, **kwargs) -> None:
         super().__init__(**kwargs)
 
         self.text = text
@@ -25,7 +27,8 @@ class Text(GridPanel):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-    def configure(self, gridslide: GridSlide) -> None:
+    def add_to_slide(self, gridslide: GridSlide) -> None:
+        print('adding to slide', self.text)
         slide = gridslide.slide
 
         shape = slide.shapes.add_shape(
@@ -58,10 +61,10 @@ class Text(GridPanel):
 
 
 class Bullets(Text):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
 
 class Footnotes(Text):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)

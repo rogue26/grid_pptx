@@ -1,15 +1,17 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING, Union
 from .panel import GridPanel
 import pandas as pd
 
 from pptx.util import Inches, Pt
 
+# imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
     from grid_pptx.slide import GridSlide
 
 
 class Table(GridPanel):
-    def __init__(self, df: Union[pd.DataFrame, pd.Series], **kwargs):
+    def __init__(self, df: Union[pd.DataFrame, pd.Series], **kwargs) -> None:
         super().__init__(**kwargs)
 
         # convert df to dataframe if necessary

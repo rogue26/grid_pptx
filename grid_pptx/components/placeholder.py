@@ -1,19 +1,25 @@
-from .panel import GridPanel
 
 
-class Placeholder(GridPanel):
-    def __init__(self, layout, content, **kwargs):
-        super().__init__(**kwargs)
-        self.subpanels = []
-
-        # create a panel for each element in the layout
-        for cell, item in zip(layout, content):
-            if type(cell) == int:
-                self.subpanels.append(content)
-
-            elif type(cell) in [list, tuple]:
-                pass
-                # append to panels
+# class Placeholder(GridPanel):
+#     def __init__(self, design, **kwargs) -> None:
+#         super().__init__(**kwargs)
+#         self.subpanels = []
+#
+#         # create a panel for each element in the layout
+#         for element in design:
+#             if isinstance(element, GridPanel):
+#                 element
+#                 # compute left, top, width, and height and set the values for the panel
+#
+#                 # if current placeholder is a "row", then we are determining column widths
+#                 pass
+#
+#             elif type(cell) in [list, tuple]:
+#                 pass
+#                 # append to panels
+#
+#     def add_to_slide(self, gridslide: GridSlide) -> None:
+#         pass
 
     # def add_subpanels(self, layout: Union[list, tuple], content: Union[list, tuple]) -> None:
 

@@ -10,6 +10,7 @@ from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
 from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT
 from pptx.dml.color import RGBColor
 
+# imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
     from grid_pptx.slide import GridSlide
 
@@ -22,7 +23,7 @@ class GridPanel:
 
     def __init__(self, *, left: float = None, top: float = None, width: float = None, height: float = None,
                  left_margin: float = 0, top_margin: float = 0, right_margin: float = 0,
-                 bottom_margin: float = 0, row_col: str = 'row'):
+                 bottom_margin: float = 0) -> None:
 
         self.left = left
         self.top = top
@@ -33,13 +34,6 @@ class GridPanel:
         self.top_margin = top_margin
         self.right_margin = right_margin
         self.bottom_margin = bottom_margin
-
-        self.row_col = row_col  # designates a panel as a "row" or "column"
-
-        self.x = Inches(self.left)
-        self.y = Inches(self.top)
-        self.cx = Inches(self.width)
-        self.cy = Inches(self.height)
 
     @property
     def right(self):
@@ -59,3 +53,19 @@ class GridPanel:
             self._row_col = value
         else:
             raise ValueError('Value of row_col must be either \'row\' or \'col\'')
+
+    @property
+    def x(self):
+        return Inches(self.left)
+
+    @property
+    def y(self):
+        return Inches(self.top)
+
+    @property
+    def cx(self):
+        return Inches(self.width)
+
+    @property
+    def cy(self):
+        return Inches(self.height)
