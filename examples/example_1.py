@@ -42,6 +42,4 @@ if __name__ == '__main__':
 
     s1 = p.add_slide(layout_num=5, design=design)
 
-    examples_loc = Path(__file__).parent.resolve()
-    filename = 'example_1.pptx'
-    p.save(examples_loc / filename)
+    p.save('example_1.pptx')
