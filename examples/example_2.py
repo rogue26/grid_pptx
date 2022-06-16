@@ -1,4 +1,3 @@
-from pathlib import Path
 from grid_pptx import GridPresentation, Row, Column
 from grid_pptx.components import Text, AreaChart, Table
 import pandas as pd
@@ -27,6 +26,6 @@ if __name__ == '__main__':
 
     s = p.add_slide(layout_num=5, design=design, title='my shiny analysis')
 
-    # examples_loc = Path(__file__).parent.resolve()
     filename = 'example_2.pptx'
+
     p.save(filename)

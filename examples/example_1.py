@@ -1,4 +1,3 @@
-from pathlib import Path
 from grid_pptx import GridPresentation, Row, Column
 from grid_pptx.components import Text
 
