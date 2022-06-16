@@ -8,7 +8,7 @@ from pptx.util import Pt
 
 # imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
-    from grid_pptx import GridSlide
+    from src.grid_pptx import GridSlide
 
 
 class Chart(GridPanel):

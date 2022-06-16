@@ -2,12 +2,6 @@ from pathlib import Path
 from grid_pptx import GridPresentation, Row, Column
 from grid_pptx.components import Text
 
-# options needed
-# header space
-# footer space / dealing with footnotes
-# rescale if not adding to 12?
-# padding around cells, slide
-
 if __name__ == '__main__':
     a = Text(text='a', outline_color='black')
     b = Text(text='b', outline_color='black')

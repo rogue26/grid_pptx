@@ -13,7 +13,6 @@ class GridPanel:
     def __init__(self, *, left: float = None, top: float = None, width: float = None, height: float = None,
                  left_margin: float = 0, top_margin: float = 0, right_margin: float = 0,
                  bottom_margin: float = 0, **kwargs) -> None:
-
         self.left = left
         self.top = top
         self.width = width

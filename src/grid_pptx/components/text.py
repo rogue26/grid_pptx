@@ -8,7 +8,7 @@ from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT
 
 # imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
-    from grid_pptx.slide import GridSlide
+    from src.grid_pptx.slide import GridSlide
 
 
 class Text(GridPanel):

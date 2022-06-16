@@ -5,7 +5,7 @@ from pptx.slide import Slide
 
 # imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
-    from grid_pptx import Row, GridPresentation
+    from src.grid_pptx import Row, GridPresentation
 
 
 class GridSlide:
@@ -29,6 +29,7 @@ class GridSlide:
 
         if title is not None:
             self.title = title
+
     @property
     def title(self):
         return self.slide.shapes.title.text

@@ -2,12 +2,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Union
 from pathlib import Path
 from pptx import Presentation
-from grid_pptx import GridSlide
+from .slide import GridSlide
 from pptx.util import Inches
 
 # imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
-    from grid_pptx import Row
+    from src.grid_pptx import Row
 
 
 class GridPresentation:

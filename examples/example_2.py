@@ -1,8 +1,7 @@
 from pathlib import Path
 from grid_pptx import GridPresentation, Row, Column
-from grid_pptx.components import Text, LineChart, AreaChart, PieChart, Table, BarChart, ColumnChart, ScatterChart
+from grid_pptx.components import Text, AreaChart, Table
 import pandas as pd
-
 
 if __name__ == '__main__':
     df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
@@ -28,6 +27,6 @@ if __name__ == '__main__':
 
     s = p.add_slide(layout_num=5, design=design, title='my shiny analysis')
 
-    examples_loc = Path(__file__).parent.resolve()
+    # examples_loc = Path(__file__).parent.resolve()
     filename = 'example_2.pptx'
-    p.save(examples_loc / filename)
+    p.save(filename)

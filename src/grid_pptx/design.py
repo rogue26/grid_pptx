@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Union
 from .components.panel import GridPanel
 
 if TYPE_CHECKING:
-    from grid_pptx import GridSlide
+    from src.grid_pptx import GridSlide
 
 
 class Row(GridPanel):
