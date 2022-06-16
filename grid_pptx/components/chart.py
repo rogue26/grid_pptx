@@ -37,22 +37,22 @@ class Chart(GridPanel):
 
         # default chart parameters
         self.has_title = False
-        self.has_legend = False
+        self.has_legend = True
         self.smooth_lines = False
 
         self.x_minor_tick_marks = 'none'  # options are 'none', 'cross', 'inside', 'outside
-        self.x_major_tick_marks = 'none'  # options are 'none', 'cross', 'inside', 'outside
+        self.x_major_tick_marks = 'inside'  # options are 'none', 'cross', 'inside', 'outside
         self.x_has_minor_gridlines = False
         self.x_has_major_gridlines = False
-        self.x_tick_label_position = 'none'
+        self.x_tick_label_position = 'next_to_axis'  # options are 'none', 'high', 'low', 'next_to_axis'
         self.x_tick_label_italic = False
         self.x_tick_label_fontsize = 16
 
         self.y_minor_tick_marks = 'none'  # options are 'none', 'cross', 'inside', 'outside'
-        self.y_major_tick_marks = 'none'  # options are 'none', 'cross', 'inside', 'outside'
+        self.y_major_tick_marks = 'inside'  # options are 'none', 'cross', 'inside', 'outside'
         self.y_has_minor_gridlines = False
         self.y_has_major_gridlines = False
-        self.y_tick_label_position = 'none'  # options are 'none', 'high', 'low', 'next_to_axis'
+        self.y_tick_label_position = 'next_to_axis'  # options are 'none', 'high', 'low', 'next_to_axis'
         self.y_tick_label_italic = False
         self.y_tick_label_fontsize = 16
 
@@ -103,74 +103,131 @@ class Chart(GridPanel):
 
 
 class LineChart(Chart):
-    chart_types = {
-        'THREE_D_LINE': XL_CHART_TYPE.THREE_D_LINE,  # 3D Line.
-        'LINE': XL_CHART_TYPE.LINE,  # Line.
-        'LINE_MARKERS': XL_CHART_TYPE.LINE_MARKERS,  # Line with Markers.
-        'LINE_MARKERS_STACKED': XL_CHART_TYPE.LINE_MARKERS_STACKED,  # Stacked Line with Markers.
-        'LINE_MARKERS_STACKED_100': XL_CHART_TYPE.LINE_MARKERS_STACKED_100,  # 100% Stacked Line with Markers.
-        'LINE_STACKED': XL_CHART_TYPE.LINE_STACKED,  # Stacked Line.
-        'LINE_STACKED_100': XL_CHART_TYPE.LINE_STACKED_100,  # 100% Stacked Line.
-    }
-    chart_type = XL_CHART_TYPE.LINE
 
-    def __init__(self, **kwargs):
+    def __init__(self, three_d: bool = False, markers: bool = False, stacked: bool = False, normalized: bool = False,
+                 **kwargs):
         super().__init__(**kwargs)
+
+        if three_d:
+            self.chart_type = XL_CHART_TYPE.THREE_D_LINE
+        else:
+            if markers:
+                if stacked:
+                    if normalized:
+                        self.chart_type = XL_CHART_TYPE.LINE_MARKERS_STACKED_100
+                    else:
+                        self.chart_type = XL_CHART_TYPE.LINE_MARKERS_STACKED
+                else:
+                    self.chart_type = XL_CHART_TYPE.LINE_MARKERS
+            else:
+                if stacked:
+                    if normalized:
+                        self.chart_type = XL_CHART_TYPE.LINE_STACKED_100
+                    else:
+                        self.chart_type = XL_CHART_TYPE.LINE_STACKED
+                else:
+                    self.chart_type = XL_CHART_TYPE.LINE
 
 
 class AreaChart(Chart):
-    chart_types = {
-        'THREE_D_AREA': XL_CHART_TYPE.THREE_D_AREA,  # 3D Area.
-        'THREE_D_AREA_STACKED': XL_CHART_TYPE.THREE_D_AREA_STACKED,  # 3D Stacked Area.
-        'THREE_D_AREA_STACKED_100': XL_CHART_TYPE.THREE_D_AREA_STACKED_100,  # 100% Stacked Area.
-        'AREA': XL_CHART_TYPE.AREA,  # Area
-        'AREA_STACKED': XL_CHART_TYPE.AREA_STACKED,  # Stacked Area.
-        'AREA_STACKED_100': XL_CHART_TYPE.AREA_STACKED_100,  # 100% Stacked Area.
-    }
 
-    def __init__(self, **kwargs):
+    def __init__(self, three_d: bool = False, stacked: bool = False, normalized: bool = False, **kwargs):
         super().__init__(**kwargs)
 
-        self.three_d = False
+        if three_d:
+            if stacked:
+                if normalized:
+                    self.chart_type = XL_CHART_TYPE.THREE_D_AREA_STACKED_100
+                else:
+                    self.chart_type = XL_CHART_TYPE.THREE_D_AREA_STACKED
+            else:
+                self.chart_type = XL_CHART_TYPE.THREE_D_AREA
+        else:
+            if stacked:
+                if normalized:
+                    self.chart_type = XL_CHART_TYPE.AREA_STACKED_100
+                else:
+                    self.chart_type = XL_CHART_TYPE.AREA_STACKED
+            else:
+                self.chart_type = XL_CHART_TYPE.AREA
 
 
 class PieChart(Chart):
-    chart_types = {
-        'THREE_D_PIE': XL_CHART_TYPE.THREE_D_PIE,  # 3D Pie.
-        'THREE_D_PIE_EXPLODED': XL_CHART_TYPE.THREE_D_PIE_EXPLODED,  # Exploded 3D Pie.
-        'DOUGHNUT': XL_CHART_TYPE.DOUGHNUT,  # Doughnut.
-        'DOUGHNUT_EXPLODED': XL_CHART_TYPE.DOUGHNUT_EXPLODED,  # Exploded Doughnut.
-        'PIE': XL_CHART_TYPE.PIE,  # Pie.
-        'PIE_EXPLODED': XL_CHART_TYPE.PIE_EXPLODED,  # Exploded Pie.
-        'PIE_OF_PIE': XL_CHART_TYPE.PIE_OF_PIE,  # Pie of Pie.
-    }
 
-    def __init__(self, **kwargs):
+    def __init__(self, three_d: bool = False, doughnut: bool = False, exploded: bool = False,
+                 compound: bool = False, compound_type: str = 'bar_of_pie', **kwargs):
         super().__init__(**kwargs)
+
+        if three_d:
+            if exploded:
+                self.chart_type = XL_CHART_TYPE.THREE_D_PIE_EXPLODED
+            else:
+                self.chart_type = XL_CHART_TYPE.THREE_D_PIE
+        else:
+            if doughnut:
+                if exploded:
+                    self.chart_type = XL_CHART_TYPE.DOUGHNUT_EXPLODED
+                else:
+                    self.chart_type = XL_CHART_TYPE.DOUGHNUT
+            else:
+                if compound:
+                    if compound_type == 'bar_of_pie':
+                        self.chart_type = XL_CHART_TYPE.BAR_OF_PIE
+                    elif compound_type == 'pie_of_pie':
+                        self.chart_type = XL_CHART_TYPE.PIE_OF_PIE
+                elif exploded:
+                    self.chart_type = XL_CHART_TYPE.PIE_EXPLODED
+                else:
+                    self.chart_type = XL_CHART_TYPE.PIE
 
 
 class BarChart(Chart):
-    chart_types = {
-        'THREE_D_BAR_CLUSTERED': XL_CHART_TYPE.THREE_D_BAR_CLUSTERED,  # 3D Clustered Bar.
-        'THREE_D_BAR_STACKED': XL_CHART_TYPE.THREE_D_BAR_STACKED,  # 3D Stacked Bar.
-        'THREE_D_BAR_STACKED_100': XL_CHART_TYPE.THREE_D_BAR_STACKED_100,  # 3D 100% Stacked Bar.
-        'BAR_CLUSTERED': XL_CHART_TYPE.BAR_CLUSTERED,  # Clustered Bar.
-        'BAR_OF_PIE': XL_CHART_TYPE.BAR_OF_PIE,  # Bar of Pie.
-        'BAR_STACKED': XL_CHART_TYPE.BAR_STACKED,  # Stacked Bar.
-        'BAR_STACKED_100': XL_CHART_TYPE.BAR_STACKED_100,  # 100% Stacked Bar.
-        'CONE_BAR_CLUSTERED': XL_CHART_TYPE.CONE_BAR_CLUSTERED,  # Clustered Cone Bar.
-        'CONE_BAR_STACKED': XL_CHART_TYPE.CONE_BAR_STACKED,  # Stacked Cone Bar.
-        'CONE_BAR_STACKED_100': XL_CHART_TYPE.CONE_BAR_STACKED_100,  # 100% Stacked Cone Bar.
-        'CYLINDER_BAR_CLUSTERED': XL_CHART_TYPE.CYLINDER_BAR_CLUSTERED,  # Clustered Cylinder Bar.
-        'CYLINDER_BAR_STACKED': XL_CHART_TYPE.CYLINDER_BAR_STACKED,  # Stacked Cylinder Bar.
-        'CYLINDER_BAR_STACKED_100': XL_CHART_TYPE.CYLINDER_BAR_STACKED_100,  # 100% Stacked Cylinder Bar.
-        'PYRAMID_BAR_CLUSTERED': XL_CHART_TYPE.PYRAMID_BAR_CLUSTERED,  # Clustered Pyramid Bar.
-        'PYRAMID_BAR_STACKED': XL_CHART_TYPE.PYRAMID_BAR_STACKED,  # Stacked Pyramid Bar.
-        'PYRAMID_BAR_STACKED_100': XL_CHART_TYPE.PYRAMID_BAR_STACKED_100,  # 100% Stacked Pyramid Bar.
-    }
 
-    def __init__(self, **kwargs):
+    def __init__(self, three_d: bool = False, shape='rectangle', stacked: bool = False, normalized: bool = False,
+                 **kwargs):
         super().__init__(**kwargs)
+
+        if three_d:
+            if shape == 'rectangle':
+                if stacked:
+                    if normalized:
+                        self.chart_type = XL_CHART_TYPE.THREE_D_BAR_STACKED_100,
+                    else:
+                        self.chart_type = XL_CHART_TYPE.THREE_D_BAR_STACKED,
+                else:
+                    self.chart_type = XL_CHART_TYPE.THREE_D_BAR_CLUSTERED,
+            elif shape == 'cone':
+                if stacked:
+                    if normalized:
+                        self.chart_type = XL_CHART_TYPE.CONE_BAR_STACKED_100,
+                    else:
+                        self.chart_type = XL_CHART_TYPE.CONE_BAR_STACKED,
+                else:
+                    self.chart_type = XL_CHART_TYPE.CONE_BAR_CLUSTERED,
+            elif shape == 'cylinder':
+                if stacked:
+                    if normalized:
+                        self.chart_type = XL_CHART_TYPE.CYLINDER_BAR_STACKED_100,
+                    else:
+                        self.chart_type = XL_CHART_TYPE.CYLINDER_BAR_STACKED,
+                else:
+                    self.chart_type = XL_CHART_TYPE.CYLINDER_BAR_CLUSTERED,
+            elif shape == 'pyramid':
+                if stacked:
+                    if normalized:
+                        self.chart_type = XL_CHART_TYPE.PYRAMID_BAR_STACKED_100,
+                    else:
+                        self.chart_type = XL_CHART_TYPE.PYRAMID_BAR_STACKED,
+                else:
+                    self.chart_type = XL_CHART_TYPE.PYRAMID_BAR_CLUSTERED,
+        else:
+            if stacked:
+                if normalized:
+                    self.chart_type = XL_CHART_TYPE.BAR_STACKED_100,
+                else:
+                    self.chart_type = XL_CHART_TYPE.BAR_STACKED,
+            else:
+                self.chart_type = XL_CHART_TYPE.BAR_CLUSTERED,
 
 
 class ColumnChart(Chart):

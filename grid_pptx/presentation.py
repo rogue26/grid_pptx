@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Union
 from pathlib import Path
 from pptx import Presentation
 from grid_pptx import GridSlide
+from pptx.util import Inches
 
 # imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
@@ -28,12 +29,12 @@ class GridPresentation:
         self.prs = Presentation(template)
         if template is None:
             if isinstance(slide_size, str):
-                self.slide_width, self.slide_height = self.slide_sizes[slide_size]
+                self.prs.slide_width, self.prs.slide_height = (Inches(_) for _ in self.slide_sizes[slide_size])
             elif isinstance(slide_size, (tuple, list)):
-                self.slide_width, self.slide_height = slide_size
-        else:
-            self.slide_width = self.prs.slide_width
-            self.slide_height = self.prs.slide_height
+                self.prs.slide_width, self.prs.slide_height = slide_size
+
+        self.slide_width = self.prs.slide_width
+        self.slide_height = self.prs.slide_height
 
         self.header_height = header_height
         self.footer_height = footer_height
