@@ -1,14 +1,15 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from .panel import GridPanel
 
 from pptx.util import Pt
 from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
 from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT
 
+from .panel import GridPanel
+
 # imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
-    from src.grid_pptx.slide import GridSlide
+    from grid_pptx.slide import GridSlide
 
 
 class Text(GridPanel):

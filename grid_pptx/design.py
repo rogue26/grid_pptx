@@ -1,9 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Union
-from .components.panel import GridPanel
+
+from components.panel import GridPanel
 
 if TYPE_CHECKING:
-    from src.grid_pptx import GridSlide
+    from grid_pptx import GridSlide
 
 
 class Row(GridPanel):

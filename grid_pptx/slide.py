@@ -5,7 +5,7 @@ from pptx.slide import Slide
 
 # imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
-    from src.grid_pptx import Row, GridPresentation
+    from grid_pptx import Row, GridPresentation
 
 
 class GridSlide:

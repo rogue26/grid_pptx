@@ -1,13 +1,14 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Union
-from .panel import GridPanel
 import pandas as pd
 
 from pptx.util import Pt
 
+from .panel import GridPanel
+
 # imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
-    from src.grid_pptx.slide import GridSlide
+    from grid_pptx.slide import GridSlide
 
 
 class Table(GridPanel):

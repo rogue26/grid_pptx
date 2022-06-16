@@ -1,18 +1,18 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from .panel import GridPanel
 
 from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_TICK_MARK, XL_TICK_LABEL_POSITION
 from pptx.util import Pt
 
+from .panel import GridPanel
+
 # imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
-    from src.grid_pptx import GridSlide
+    from grid_pptx import GridSlide
 
 
 class Chart(GridPanel):
-
     chart_type = XL_CHART_TYPE.LINE
 
     tick_mark_options = {

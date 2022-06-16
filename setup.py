@@ -24,6 +24,6 @@ setuptools.setup(
     zip_safe=False,
     install_requires=[
         'python-pptx==0.6.21',
-        'pandas==1.4.2'
+        'pandas==1.4.2',
     ]  # Install other dependencies if any
 )
