@@ -28,7 +28,6 @@ class Text(GridPanel):
             setattr(self, k, v)
 
     def add_to_slide(self, gridslide: GridSlide) -> None:
-        print('adding to slide', self.text)
         slide = gridslide.slide
 
         shape = slide.shapes.add_shape(

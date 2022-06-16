@@ -100,3 +100,153 @@ class Chart(GridPanel):
         x_axis.tick_labels.font.size = Pt(self.x_tick_label_fontsize)
 
         # x_axis.tick_labels.number_format = '0%'
+
+
+class LineChart(Chart):
+    chart_types = {
+        'THREE_D_LINE': XL_CHART_TYPE.THREE_D_LINE,  # 3D Line.
+        'LINE': XL_CHART_TYPE.LINE,  # Line.
+        'LINE_MARKERS': XL_CHART_TYPE.LINE_MARKERS,  # Line with Markers.
+        'LINE_MARKERS_STACKED': XL_CHART_TYPE.LINE_MARKERS_STACKED,  # Stacked Line with Markers.
+        'LINE_MARKERS_STACKED_100': XL_CHART_TYPE.LINE_MARKERS_STACKED_100,  # 100% Stacked Line with Markers.
+        'LINE_STACKED': XL_CHART_TYPE.LINE_STACKED,  # Stacked Line.
+        'LINE_STACKED_100': XL_CHART_TYPE.LINE_STACKED_100,  # 100% Stacked Line.
+    }
+    chart_type = XL_CHART_TYPE.LINE
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+
+class AreaChart(Chart):
+    chart_types = {
+        'THREE_D_AREA': XL_CHART_TYPE.THREE_D_AREA,  # 3D Area.
+        'THREE_D_AREA_STACKED': XL_CHART_TYPE.THREE_D_AREA_STACKED,  # 3D Stacked Area.
+        'THREE_D_AREA_STACKED_100': XL_CHART_TYPE.THREE_D_AREA_STACKED_100,  # 100% Stacked Area.
+        'AREA': XL_CHART_TYPE.AREA,  # Area
+        'AREA_STACKED': XL_CHART_TYPE.AREA_STACKED,  # Stacked Area.
+        'AREA_STACKED_100': XL_CHART_TYPE.AREA_STACKED_100,  # 100% Stacked Area.
+    }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.three_d = False
+
+
+class PieChart(Chart):
+    chart_types = {
+        'THREE_D_PIE': XL_CHART_TYPE.THREE_D_PIE,  # 3D Pie.
+        'THREE_D_PIE_EXPLODED': XL_CHART_TYPE.THREE_D_PIE_EXPLODED,  # Exploded 3D Pie.
+        'DOUGHNUT': XL_CHART_TYPE.DOUGHNUT,  # Doughnut.
+        'DOUGHNUT_EXPLODED': XL_CHART_TYPE.DOUGHNUT_EXPLODED,  # Exploded Doughnut.
+        'PIE': XL_CHART_TYPE.PIE,  # Pie.
+        'PIE_EXPLODED': XL_CHART_TYPE.PIE_EXPLODED,  # Exploded Pie.
+        'PIE_OF_PIE': XL_CHART_TYPE.PIE_OF_PIE,  # Pie of Pie.
+    }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+
+class BarChart(Chart):
+    chart_types = {
+        'THREE_D_BAR_CLUSTERED': XL_CHART_TYPE.THREE_D_BAR_CLUSTERED,  # 3D Clustered Bar.
+        'THREE_D_BAR_STACKED': XL_CHART_TYPE.THREE_D_BAR_STACKED,  # 3D Stacked Bar.
+        'THREE_D_BAR_STACKED_100': XL_CHART_TYPE.THREE_D_BAR_STACKED_100,  # 3D 100% Stacked Bar.
+        'BAR_CLUSTERED': XL_CHART_TYPE.BAR_CLUSTERED,  # Clustered Bar.
+        'BAR_OF_PIE': XL_CHART_TYPE.BAR_OF_PIE,  # Bar of Pie.
+        'BAR_STACKED': XL_CHART_TYPE.BAR_STACKED,  # Stacked Bar.
+        'BAR_STACKED_100': XL_CHART_TYPE.BAR_STACKED_100,  # 100% Stacked Bar.
+        'CONE_BAR_CLUSTERED': XL_CHART_TYPE.CONE_BAR_CLUSTERED,  # Clustered Cone Bar.
+        'CONE_BAR_STACKED': XL_CHART_TYPE.CONE_BAR_STACKED,  # Stacked Cone Bar.
+        'CONE_BAR_STACKED_100': XL_CHART_TYPE.CONE_BAR_STACKED_100,  # 100% Stacked Cone Bar.
+        'CYLINDER_BAR_CLUSTERED': XL_CHART_TYPE.CYLINDER_BAR_CLUSTERED,  # Clustered Cylinder Bar.
+        'CYLINDER_BAR_STACKED': XL_CHART_TYPE.CYLINDER_BAR_STACKED,  # Stacked Cylinder Bar.
+        'CYLINDER_BAR_STACKED_100': XL_CHART_TYPE.CYLINDER_BAR_STACKED_100,  # 100% Stacked Cylinder Bar.
+        'PYRAMID_BAR_CLUSTERED': XL_CHART_TYPE.PYRAMID_BAR_CLUSTERED,  # Clustered Pyramid Bar.
+        'PYRAMID_BAR_STACKED': XL_CHART_TYPE.PYRAMID_BAR_STACKED,  # Stacked Pyramid Bar.
+        'PYRAMID_BAR_STACKED_100': XL_CHART_TYPE.PYRAMID_BAR_STACKED_100,  # 100% Stacked Pyramid Bar.
+    }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+
+class ColumnChart(Chart):
+    chart_types = {
+        'THREE_D_COLUMN': XL_CHART_TYPE.THREE_D_COLUMN,  # 3D Column.
+        'THREE_D_COLUMN_CLUSTERED': XL_CHART_TYPE.THREE_D_COLUMN_CLUSTERED,  # 3D Clustered Column.
+        'THREE_D_COLUMN_STACKED': XL_CHART_TYPE.THREE_D_COLUMN_STACKED,  # 3D Stacked Column.
+        'THREE_D_COLUMN_STACKED_100': XL_CHART_TYPE.THREE_D_COLUMN_STACKED_100,  # 3D 100% Stacked Column.
+        'COLUMN_CLUSTERED': XL_CHART_TYPE.COLUMN_CLUSTERED,  # Clustered Column.
+        'COLUMN_STACKED': XL_CHART_TYPE.COLUMN_STACKED,  # Stacked Column.
+        'COLUMN_STACKED_100': XL_CHART_TYPE.COLUMN_STACKED_100,  # 100% Stacked Column.
+        'CONE_COL': XL_CHART_TYPE.CONE_COL,  # 3D Cone Column.
+        'CONE_COL_CLUSTERED': XL_CHART_TYPE.CONE_COL_CLUSTERED,  # Clustered Cone Column.
+        'CONE_COL_STACKED': XL_CHART_TYPE.CONE_COL_STACKED,  # Stacked Cone Column.
+        'CONE_COL_STACKED_100': XL_CHART_TYPE.CONE_COL_STACKED_100,  # 100% Stacked Cone Column.
+        'CYLINDER_COL': XL_CHART_TYPE.CYLINDER_COL,  # 3D Cylinder Column.
+        'CYLINDER_COL_CLUSTERED': XL_CHART_TYPE.CYLINDER_COL_CLUSTERED,  # Clustered Cone Column.
+        'CYLINDER_COL_STACKED': XL_CHART_TYPE.CYLINDER_COL_STACKED,  # Stacked Cone Column.
+        'CYLINDER_COL_STACKED_100': XL_CHART_TYPE.CYLINDER_COL_STACKED_100,  # 100% Stacked Cylinder Column.
+        'PYRAMID_COL': XL_CHART_TYPE.PYRAMID_COL,  # 3D Pyramid Column.
+        'PYRAMID_COL_CLUSTERED': XL_CHART_TYPE.PYRAMID_COL_CLUSTERED,  # Clustered Pyramid Column.
+        'PYRAMID_COL_STACKED': XL_CHART_TYPE.PYRAMID_COL_STACKED,  # Stacked Pyramid Column.
+        'PYRAMID_COL_STACKED_100': XL_CHART_TYPE.PYRAMID_COL_STACKED_100,  # 100% Stacked Pyramid Column.
+    }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+
+class SurfaceChart(Chart):
+    chart_types = {
+        'SURFACE': XL_CHART_TYPE.SURFACE,  # 3D Surface.
+        'SURFACE_TOP_VIEW': XL_CHART_TYPE.SURFACE_TOP_VIEW,  # Surface (Top View).
+        'SURFACE_TOP_VIEW_WIREFRAME': XL_CHART_TYPE.SURFACE_TOP_VIEW_WIREFRAME,  # Surface (Top View wireframe).
+        'SURFACE_WIREFRAME': XL_CHART_TYPE.SURFACE_WIREFRAME,  # 3D Surface (wireframe).
+    }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+
+class ScatterChart(Chart):
+    chart_types = {
+        'XY_SCATTER': XL_CHART_TYPE.XY_SCATTER,  # Scatter.
+        'XY_SCATTER_LINES': XL_CHART_TYPE.XY_SCATTER_LINES,  # Scatter with Lines.
+        'XY_SCATTER_LINES_NO_MARKERS': XL_CHART_TYPE.XY_SCATTER_LINES_NO_MARKERS,
+        # Scatter with Lines and No Data Markers.
+        'XY_SCATTER_SMOOTH': XL_CHART_TYPE.XY_SCATTER_SMOOTH,  # Scatter with Smoothed Lines.
+        'XY_SCATTER_SMOOTH_NO_MARKERS': XL_CHART_TYPE.XY_SCATTER_SMOOTH_NO_MARKERS,
+        # Scatter with Smoothed Lines and No Data Markers.
+        'BUBBLE': XL_CHART_TYPE.BUBBLE,  # Bubble.
+        'BUBBLE_THREE_D_EFFECT': XL_CHART_TYPE.BUBBLE_THREE_D_EFFECT,  # Bubble with 3D effects.
+    }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+
+class StockChart(Chart):
+    chart_types = {
+        'STOCK_HLC': XL_CHART_TYPE.STOCK_HLC,  # High-Low-Close.
+        'STOCK_OHLC': XL_CHART_TYPE.STOCK_OHLC,  # Open-High-Low-Close.
+        'STOCK_VHLC': XL_CHART_TYPE.STOCK_VHLC,  # Volume-High-Low-Close.
+        'STOCK_VOHLC': XL_CHART_TYPE.STOCK_VOHLC,  # Volume-Open-High-Low-Close.
+    }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+
+class RadarChart(Chart):
+    chart_types = {
+        'RADAR': XL_CHART_TYPE.RADAR,  # Radar.
+        'RADAR_FILLED': XL_CHART_TYPE.RADAR_FILLED,  # Filled Radar.
+        'RADAR_MARKERS': XL_CHART_TYPE.RADAR_MARKERS,  # Radar with Data Markers.
+    }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)

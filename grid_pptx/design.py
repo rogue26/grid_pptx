@@ -1,6 +1,9 @@
 from __future__ import annotations
-from typing import Union
+from typing import TYPE_CHECKING, Union
 from .components.panel import GridPanel
+
+if TYPE_CHECKING:
+    from grid_pptx import GridSlide
 
 
 class Row(GridPanel):
@@ -11,7 +14,7 @@ class Row(GridPanel):
         self.containers = [_ for _ in args]
         self.terminal = len(args) == 1 and not isinstance(args[0], Column)
 
-    def build(self, slide) -> None:
+    def build(self, slide: GridSlide) -> None:
         """ build columns
 
         :return: None
@@ -25,6 +28,7 @@ class Row(GridPanel):
 
             # width will be determined by width of current row and value (out of 12) given to panel
             container.left = left_tracker
+
             container.width = container.value / 12.0 * self.width
 
             left_tracker += container.width
@@ -52,7 +56,7 @@ class Column(GridPanel):
         self.containers = [_ for _ in args]
         self.terminal = len(args) == 1 and not isinstance(args[0], Row)
 
-    def build(self, slide) -> None:
+    def build(self, slide: GridSlide) -> None:
         """ build columns
 
         :return: None

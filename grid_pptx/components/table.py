@@ -35,9 +35,9 @@ class Table(GridPanel):
         # if minimize height, then set a very small initial height so the table will be as compact as possible
         # note: must be done before creating table as cy is a required argument.
         if self.minimize_height:
-            self.cy = Inches(0.5)
+            self.height = 0.5
 
-    def configure(self, gridslide: GridSlide) -> None:
+    def add_to_slide(self, gridslide: GridSlide) -> None:
         slide = gridslide.slide
 
         table = slide.shapes.add_table(
