@@ -1,18 +1,7 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Union
 
-import itertools
-
-from pptx.chart.data import CategoryChartData
-from pptx.enum.chart import XL_CHART_TYPE, XL_TICK_MARK, XL_TICK_LABEL_POSITION
-from pptx.util import Inches, Pt
-from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
-from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT
+from pptx.util import Inches
 from pptx.dml.color import RGBColor
-
-# imports for type hints that would normally cause circular imports
-if TYPE_CHECKING:
-    from grid_pptx.slide import GridSlide
 
 
 class GridPanel:
@@ -42,17 +31,6 @@ class GridPanel:
     @property
     def bottom(self):
         return self.top + self.height
-
-    @property
-    def row_col(self):
-        return self._row_col
-
-    @row_col.setter
-    def row_col(self, value):
-        if value in ['row', 'col']:
-            self._row_col = value
-        else:
-            raise ValueError('Value of row_col must be either \'row\' or \'col\'')
 
     @property
     def x(self):
