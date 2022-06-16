@@ -5,9 +5,9 @@ import pandas as pd
 
 
 if __name__ == '__main__':
-    df = pd.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6], 'c': [7, 8, 9]})
+    df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
 
-    chart = LineChart(df=df)
+    chart = AreaChart(df=df, stacked=True, normalized=True)
     table = Table(df)
     text = Text(text='some explanatory text here')
 
@@ -18,8 +18,8 @@ if __name__ == '__main__':
                         Row(6, text)))
 
     p = GridPresentation(
-        template='greenblue.pptx',
-        # slide_size='16_9',
+        # template='greenblue.pptx',
+        slide_size='16_9',
         header_height=1.5,
         footer_height=1.0,
         right_margin=0.25,
