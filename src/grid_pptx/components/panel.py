@@ -13,6 +13,18 @@ class GridPanel:
     def __init__(self, *, left: float = None, top: float = None, width: float = None, height: float = None,
                  left_margin: float = 0, top_margin: float = 0, right_margin: float = 0,
                  bottom_margin: float = 0, **kwargs) -> None:
+        """
+
+        :param left:
+        :param top:
+        :param width:
+        :param height:
+        :param left_margin:
+        :param top_margin:
+        :param right_margin:
+        :param bottom_margin:
+        :param kwargs:
+        """
         self.left = left
         self.top = top
         self.width = width

@@ -23,6 +23,12 @@ class Text(GridPanel):
     }
 
     def __init__(self, text: str, alignment: str = 'left', **kwargs) -> None:
+        """
+
+        :param text:
+        :param alignment:
+        :param kwargs:
+        """
         super().__init__(**kwargs)
 
         self.text = text
@@ -39,6 +45,11 @@ class Text(GridPanel):
             setattr(self, k, v)
 
     def add_to_slide(self, gridslide: GridSlide) -> None:
+        """
+
+        :param gridslide:
+        :return:
+        """
         slide = gridslide.slide
 
         shape = slide.shapes.add_shape(
@@ -72,9 +83,17 @@ class Text(GridPanel):
 
 class Bullets(Text):
     def __init__(self, **kwargs) -> None:
+        """
+
+        :param kwargs:
+        """
         super().__init__(**kwargs)
 
 
 class Footnotes(Text):
     def __init__(self, **kwargs) -> None:
+        """
+
+        :param kwargs:
+        """
         super().__init__(**kwargs)

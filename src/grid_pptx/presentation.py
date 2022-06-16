@@ -11,10 +11,6 @@ if TYPE_CHECKING:
 
 
 class GridPresentation:
-    """
-    Stores and manipulates a pptx.Presentation instance
-    """
-
     slide_sizes = {
         'letter': (10, 7.5),
         '4_3': (10, 7.5),
@@ -26,6 +22,15 @@ class GridPresentation:
     def __init__(self, template: Union[str, Path] = None, slide_size: Union[str, tuple, list] = None,
                  header_height: float = 1.0, footer_height: float = 0.75, left_margin: float = 0.5,
                  right_margin: float = 0.5) -> None:
+        """ Stores and manipulates a pptx.Presentation instance
+
+        :param template:
+        :param slide_size:
+        :param header_height:
+        :param footer_height:
+        :param left_margin:
+        :param right_margin:
+        """
         self.prs = Presentation(template)
         if template is None:
             if isinstance(slide_size, str):
@@ -44,14 +49,20 @@ class GridPresentation:
         # self.slides = []
 
     def save(self, loc: Union[str, Path] = Path.home()):
+        """
+
+        :param loc:
+        :return:
+        """
         self.prs.save(loc)
 
     def add_slide(self, design: Row, layout_num: int = 5, title: str = None) -> GridSlide:
-        """Add a Slide to the pptx Presentation and a GridSlide to GridPresentation to manage it
+        """ Add a Slide to the pptx Presentation and a GridSlide to GridPresentation to manage it'
 
-        :param title:
+        :param self:
         :param design:
         :param layout_num:
+        :param title:
         :return:
         """
 

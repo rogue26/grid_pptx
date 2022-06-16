@@ -89,6 +89,12 @@ class Table(GridPanel):
     }
 
     def __init__(self, df: Union[pd.DataFrame, pd.Series], style: str = 'medium_style_3_accent_1', **kwargs) -> None:
+        """
+
+        :param df:
+        :param style:
+        :param kwargs:
+        """
         super().__init__(**kwargs)
 
         # convert df to dataframe if necessary
@@ -116,6 +122,11 @@ class Table(GridPanel):
             self.height = 0.5
 
     def add_to_slide(self, gridslide: GridSlide) -> None:
+        """
+
+        :param gridslide:
+        :return:
+        """
         slide = gridslide.slide
 
         table_shape = slide.shapes.add_table(

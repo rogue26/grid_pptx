@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 
 class Chart(GridPanel):
+
     chart_type = XL_CHART_TYPE.LINE
 
     tick_mark_options = {
@@ -29,6 +30,11 @@ class Chart(GridPanel):
     }
 
     def __init__(self, *, df, **kwargs) -> None:
+        """
+
+        :param df:
+        :param kwargs:
+        """
         super().__init__(**kwargs)
 
         self.df = df
@@ -64,11 +70,20 @@ class Chart(GridPanel):
         self.prep_chart_data()
 
     def prep_chart_data(self):
+        """
+
+        :return:
+        """
         self.chart_data.categories = self.df.index
         for column in self.df.columns:
             self.chart_data.add_series(column, self.df[column])
 
     def add_to_slide(self, gridslide: GridSlide) -> None:
+        """
+
+        :param gridslide:
+        :return:
+        """
         slide = gridslide.slide
         chart = slide.shapes.add_chart(
             self.chart_type, self.x, self.y, self.cx, self.cy, self.chart_data
@@ -106,6 +121,14 @@ class LineChart(Chart):
 
     def __init__(self, three_d: bool = False, markers: bool = False, stacked: bool = False, normalized: bool = False,
                  **kwargs):
+        """
+
+        :param three_d:
+        :param markers:
+        :param stacked:
+        :param normalized:
+        :param kwargs:
+        """
         super().__init__(**kwargs)
 
         if three_d:
@@ -132,6 +155,13 @@ class LineChart(Chart):
 class AreaChart(Chart):
 
     def __init__(self, three_d: bool = False, stacked: bool = False, normalized: bool = False, **kwargs):
+        """
+
+        :param three_d:
+        :param stacked:
+        :param normalized:
+        :param kwargs:
+        """
         super().__init__(**kwargs)
 
         if three_d:
@@ -156,6 +186,15 @@ class PieChart(Chart):
 
     def __init__(self, three_d: bool = False, doughnut: bool = False, exploded: bool = False,
                  compound: bool = False, compound_type: str = 'bar_of_pie', **kwargs):
+        """
+
+        :param three_d:
+        :param doughnut:
+        :param exploded:
+        :param compound:
+        :param compound_type:
+        :param kwargs:
+        """
         super().__init__(**kwargs)
 
         if three_d:
@@ -185,6 +224,14 @@ class BarChart(Chart):
 
     def __init__(self, three_d: bool = False, shape='rectangle', stacked: bool = False, normalized: bool = False,
                  **kwargs):
+        """
+
+        :param three_d:
+        :param shape:
+        :param stacked:
+        :param normalized:
+        :param kwargs:
+        """
         super().__init__(**kwargs)
 
         if three_d:

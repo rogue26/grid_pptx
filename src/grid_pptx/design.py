@@ -8,6 +8,12 @@ if TYPE_CHECKING:
 
 class Row(GridPanel):
     def __init__(self, value: int, *args: Union[GridPanel, Column], **kwargs) -> None:
+        """
+
+        :param value:
+        :param args:
+        :param kwargs:
+        """
         super().__init__(**kwargs)
 
         self.value = value
@@ -15,9 +21,10 @@ class Row(GridPanel):
         self.terminal = len(args) == 1 and not isinstance(args[0], Column)
 
     def build(self, slide: GridSlide) -> None:
-        """ build columns
+        """
 
-        :return: None
+        :param slide:
+        :return:
         """
 
         left_tracker = self.left
@@ -50,6 +57,12 @@ class Row(GridPanel):
 
 class Column(GridPanel):
     def __init__(self, value: int, *args: Union[GridPanel, Row], **kwargs) -> None:
+        """
+
+        :param value:
+        :param args:
+        :param kwargs:
+        """
         super().__init__(**kwargs)
 
         self.value = value
@@ -57,9 +70,10 @@ class Column(GridPanel):
         self.terminal = len(args) == 1 and not isinstance(args[0], Row)
 
     def build(self, slide: GridSlide) -> None:
-        """ build columns
+        """
 
-        :return: None
+        :param slide:
+        :return:
         """
 
         top_tracker = self.top
