@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Union
 from .panel import GridPanel
 import pandas as pd
 
-from pptx.util import Inches, Pt
+from pptx.util import Pt
 
 # imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
