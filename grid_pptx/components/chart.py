@@ -13,8 +13,12 @@ if TYPE_CHECKING:
 
 
 class Chart(GridPanel):
-    chart_type = XL_CHART_TYPE.LINE
+    """
+    Base class for all charts
+    """
 
+    #: Options for tick mark placement on either the x or y axes. Values are the constants
+    #: used in the python-pptx package, but are used in the code as ``XL_CHART_TYPE.LINE``, etc.
     tick_mark_options = {
         'none': XL_TICK_MARK.NONE,
         'cross': XL_TICK_MARK.CROSS,

@@ -5,6 +5,9 @@ from pptx.dml.color import RGBColor
 
 
 class GridPanel:
+    """
+    Base class for Row, Column, and all components, including charts, tables, text, images, etc.
+    """
     color_dict = {
         'black': RGBColor(0, 0, 0),
         'white': RGBColor(255, 255, 255),
@@ -14,17 +17,17 @@ class GridPanel:
                  left_margin: float = 0, top_margin: float = 0, right_margin: float = 0,
                  bottom_margin: float = 0, **kwargs) -> None:
         """
-
-        :param left:
-        :param top:
-        :param width:
-        :param height:
+        :param left: The distance from the left side of the slide to the left side of the panel in inches.
+        :param top: The distance from the top of the slide to the top of the panel in inches.
+        :param width: The width of the panel in inches.
+        :param height: The height of the panel in inches.
         :param left_margin:
         :param top_margin:
         :param right_margin:
         :param bottom_margin:
         :param kwargs:
         """
+
         self.left = left
         self.top = top
         self.width = width
@@ -37,24 +40,42 @@ class GridPanel:
 
     @property
     def right(self):
+        """
+        The distance from the left side of the slide to the right side of the panel in inches
+        """
         return self.left + self.width
 
     @property
     def bottom(self):
+        """
+        The distance from the top of the slide to the bottom of the panel in inches
+        """
         return self.top + self.height
 
     @property
     def x(self):
+        """
+        The distance from the left side of the slide to the right side of the panel in EMU (default PowerPoint units).
+        """
         return Inches(self.left)
 
     @property
     def y(self):
+        """
+        The distance from the top of the slide to the top of the panel in EMU (default PowerPoint units).
+        """
         return Inches(self.top)
 
     @property
     def cx(self):
+        """
+        The width of the panel in EMU (default PowerPoint units).
+        """
         return Inches(self.width)
 
     @property
     def cy(self):
+        """
+        The height of the panel in EMU (default PowerPoint units).
+        """
         return Inches(self.height)
