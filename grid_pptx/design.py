@@ -28,32 +28,30 @@ class Row(GridPanel):
         :return:
         """
 
-        left_tracker = self.left
-        for container in self.containers:
-            # Top and height will be the same for all columns in row
-            container.top = self.top
-            container.height = self.height
+        if self.terminal:  # configure panel and add to slide
+            panel = self.containers[0]
 
-            # width will be determined by width of current row and value (out of 12) given to panel
-            container.left = left_tracker
+            panel.top = self.top
+            panel.height = self.height
+            panel.left = self.left
+            panel.width = self.width
 
-            container.width = container.value / 12.0 * self.width
+            panel.add_to_slide(slide)
 
-            left_tracker += container.width
+        else:
+            left_tracker = self.left
+            for container in self.containers:
+                # Top and height will be the same for all columns in row
+                container.top = self.top
+                container.height = self.height
 
-            if container.terminal:
-                # reach in and grab the panel to add to the slide
-                panel = container.containers[0]
+                # width will be determined by width of current row and value (out of 12) given to panel
+                container.left = left_tracker
+                container.width = container.value / 12.0 * self.width
 
-                panel.top = container.top
-                panel.height = container.height
-                panel.left = container.left
-                panel.width = container.width
-
-                panel.add_to_slide(slide)
-
-            else:
                 container.build(slide)
+
+                left_tracker += container.width
 
 
 class Column(GridPanel):
@@ -77,27 +75,39 @@ class Column(GridPanel):
         :return:
         """
 
-        top_tracker = self.top
-        for container in self.containers:
-            # left and width will be the same for all rows in column
-            container.width = self.width
-            container.left = self.left
+        if self.terminal:  # configure panel and add to slide
+            panel = self.containers[0]
 
-            # Top and height will be the same for all columns in row
-            container.top = top_tracker
-            container.height = container.value / 12.0 * self.height
+            panel.top = self.top
+            panel.height = self.height
+            panel.left = self.left
+            panel.width = self.width
 
-            top_tracker += container.height
+            panel.add_to_slide(slide)
 
-            if container.terminal:
-                # reach in and grab the panel to add to the slide
-                panel = container.containers[0]
+        else:
+            top_tracker = self.top
+            for container in self.containers:
+                print('self = ', self)
+                print('self.left = ', self.left)
+                print('self.width = ', self.width)
+                print('self.top = ', self.top)
+                print('self.height = ', self.height)
+                print('container = ', container)
+                # Left and width will be the same for all columns in row
+                container.left = self.left
+                container.width = self.width
 
-                panel.top = container.top
-                panel.height = container.height
-                panel.left = container.left
-                panel.width = container.width
+                # width will be determined by width of current row and value (out of 12) given to panel
 
-                panel.add_to_slide(slide)
-            else:
+                container.top = top_tracker
+                container.height = container.value / 12.0 * self.height
+
+                print('container.left = ', container.left)
+                print('container.width = ', container.width)
+                print('container.top = ', container.top)
+                print('container.height = ', container.height)
+                print()
                 container.build(slide)
+
+                top_tracker += container.height
