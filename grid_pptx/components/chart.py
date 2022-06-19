@@ -156,7 +156,7 @@ class Chart(GridPanel):
 
 class AreaChart(Chart):
 
-    def __init__(self, three_d: bool = False, stacked: bool = False, normalized: bool = False, **kwargs):
+    def __init__(self, df, three_d: bool = False, stacked: bool = False, normalized: bool = False, **kwargs):
         """
 
         :param three_d:
@@ -164,7 +164,7 @@ class AreaChart(Chart):
         :param normalized:
         :param kwargs:
         """
-        super().__init__(**kwargs)
+        super().__init__(df=df, **kwargs)
 
         if three_d:
             if stacked:
@@ -186,7 +186,7 @@ class AreaChart(Chart):
 
 class BarChart(Chart):
 
-    def __init__(self, three_d: bool = False, shape: str = 'rectangle', stacked: bool = False, normalized: bool = False,
+    def __init__(self, df, three_d: bool = False, shape: str = 'rectangle', stacked: bool = False, normalized: bool = False,
                  **kwargs):
         """
 
@@ -196,7 +196,7 @@ class BarChart(Chart):
         :param normalized:
         :param kwargs:
         """
-        super().__init__(**kwargs)
+        super().__init__(df=df, **kwargs)
 
         if three_d:
             if shape == 'rectangle':
@@ -243,13 +243,13 @@ class BarChart(Chart):
 
 class BubbleChart(Chart):
 
-    def __init__(self, *, x_col, y_col: str, size_col: str, three_d: bool = False, **kwargs) -> None:
+    def __init__(self, *, df, x_col, y_col: str, size_col: str, three_d: bool = False, **kwargs) -> None:
         """
 
         :param three_d:
         :param kwargs:
         """
-        super().__init__(**kwargs)
+        super().__init__(df=df, **kwargs)
 
         # override the chart_data initialization for XY- and Bubble-type charts
         self.chart_data = XyChartData()
@@ -295,7 +295,7 @@ class ColumnChart(Chart):
         # 'PYRAMID_COL_STACKED_100': XL_CHART_TYPE.,  # 100% Stacked Pyramid Column.
     }
 
-    def __init__(self, three_d: bool = False, shape='rectangle', stacked: bool = False, normalized: bool = False,
+    def __init__(self, df, three_d: bool = False, shape='rectangle', stacked: bool = False, normalized: bool = False,
                  **kwargs):
         """
 
@@ -305,7 +305,7 @@ class ColumnChart(Chart):
         :param normalized:
         :param kwargs:
         """
-        super().__init__(**kwargs)
+        super().__init__(df=df, **kwargs)
 
         if three_d:
             if shape == 'rectangle':
@@ -352,7 +352,7 @@ class ColumnChart(Chart):
 
 class LineChart(Chart):
 
-    def __init__(self, three_d: bool = False, markers: bool = False, stacked: bool = False, normalized: bool = False,
+    def __init__(self, df, three_d: bool = False, markers: bool = False, stacked: bool = False, normalized: bool = False,
                  **kwargs):
         """
 
@@ -362,7 +362,7 @@ class LineChart(Chart):
         :param normalized:
         :param kwargs:
         """
-        super().__init__(**kwargs)
+        super().__init__(df=df, **kwargs)
 
         if three_d:
             self.chart_type = XL_CHART_TYPE.THREE_D_LINE
@@ -387,7 +387,7 @@ class LineChart(Chart):
 
 class PieChart(Chart):
 
-    def __init__(self, three_d: bool = False, doughnut: bool = False, exploded: bool = False,
+    def __init__(self, df, three_d: bool = False, doughnut: bool = False, exploded: bool = False,
                  compound: bool = False, compound_type: str = 'bar_of_pie', **kwargs):
         """
 
@@ -398,7 +398,7 @@ class PieChart(Chart):
         :param compound_type:
         :param kwargs:
         """
-        super().__init__(**kwargs)
+        super().__init__(df=df, **kwargs)
 
         if three_d:
             if exploded:
@@ -425,14 +425,14 @@ class PieChart(Chart):
 
 class RadarChart(Chart):
 
-    def __init__(self, filled: bool = False, markers: bool = False, **kwargs):
+    def __init__(self, df, filled: bool = False, markers: bool = False, **kwargs):
         """
 
         :param filled:
         :param markers:
         :param kwargs:
         """
-        super().__init__(**kwargs)
+        super().__init__(df=df, **kwargs)
 
         if filled:
             self.chart_type = XL_CHART_TYPE.RADAR_FILLED
@@ -444,7 +444,7 @@ class RadarChart(Chart):
 
 class ScatterChart(Chart):
 
-    def __init__(self, lines: bool = False, markers: bool = False, smooth: bool = False, **kwargs):
+    def __init__(self, df, lines: bool = False, markers: bool = False, smooth: bool = False, **kwargs):
         """
 
         :param lines:
@@ -452,7 +452,7 @@ class ScatterChart(Chart):
         :param smooth:
         :param kwargs:
         """
-        super().__init__(**kwargs)
+        super().__init__(df=df, **kwargs)
 
         if lines:
             if markers:
@@ -471,14 +471,14 @@ class ScatterChart(Chart):
 
 class StockChart(Chart):
 
-    def __init__(self, incl_open: bool = False, volume: bool = False, **kwargs):
+    def __init__(self, df, incl_open: bool = False, volume: bool = False, **kwargs):
         """
 
         :param incl_open:
         :param volume:
         :param kwargs:
         """
-        super().__init__(**kwargs)
+        super().__init__(df=df, **kwargs)
 
         if incl_open:  #: note: "incl_open" was used instead of "open" to avoid shadowing builtin "open"
             if volume:
@@ -494,14 +494,14 @@ class StockChart(Chart):
 
 class SurfaceChart(Chart):
 
-    def __init__(self, top_view: bool = False, wireframe: bool = False, **kwargs):
+    def __init__(self, df, top_view: bool = False, wireframe: bool = False, **kwargs):
         """
 
         :param top_view:
         :param wireframe:
         :param kwargs:
         """
-        super().__init__(**kwargs)
+        super().__init__(df=df, **kwargs)
 
         if top_view:
             if wireframe:
