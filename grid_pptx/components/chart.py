@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+import pandas as pd
 from pptx.chart.data import CategoryChartData, XyChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_TICK_MARK, XL_TICK_LABEL_POSITION
 from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
@@ -14,7 +15,20 @@ if TYPE_CHECKING:
     from grid_pptx import GridSlide
 
 
-class Chart(GridPanel):
+class NewInitCaller(type):
+    """
+    metaclass which overrides the "__call__" function to automatically call
+    "prep_chart_data" after __init__, even if __init__ has been overridden
+    """
+
+    def __call__(cls, *args, **kwargs):
+        """Called when you call MyNewClass() """
+        obj = type.__call__(cls, *args, **kwargs)
+        obj.prep_chart_data()
+        return obj
+
+
+class Chart(GridPanel, metaclass=NewInitCaller):
     """
     Base class for all charts
     """
@@ -35,7 +49,7 @@ class Chart(GridPanel):
         'none': XL_TICK_LABEL_POSITION.NONE,
     }
 
-    def __init__(self, *, df, **kwargs) -> None:
+    def __init__(self, *, df: pd.DataFrame, **kwargs) -> None:
         """
 
         :param df:
@@ -45,7 +59,7 @@ class Chart(GridPanel):
 
         self.df = df
         self.chart_type = None
-        self.chart_data = CategoryChartData()
+        self.chart_data = None
 
         # default chart parameters
         self.has_title = False
@@ -72,14 +86,12 @@ class Chart(GridPanel):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-        # prep chart data
-        self.prep_chart_data()
-
     def prep_chart_data(self) -> None:
         """
 
         :return:
         """
+        self.chart_data = CategoryChartData()
         self.chart_data.categories = self.df.index
         for column in self.df.columns:
             self.chart_data.add_series(column, self.df[column])
@@ -156,7 +168,8 @@ class Chart(GridPanel):
 
 class AreaChart(Chart):
 
-    def __init__(self, df, three_d: bool = False, stacked: bool = False, normalized: bool = False, **kwargs):
+    def __init__(self, df: pd.DataFrame, three_d: bool = False, stacked: bool = False, normalized: bool = False,
+                 **kwargs):
         """
 
         :param three_d:
@@ -186,7 +199,8 @@ class AreaChart(Chart):
 
 class BarChart(Chart):
 
-    def __init__(self, df, three_d: bool = False, shape: str = 'rectangle', stacked: bool = False, normalized: bool = False,
+    def __init__(self, df: pd.DataFrame, three_d: bool = False, shape: str = 'rectangle', stacked: bool = False,
+                 normalized: bool = False,
                  **kwargs):
         """
 
@@ -241,37 +255,6 @@ class BarChart(Chart):
                 self.chart_type = XL_CHART_TYPE.BAR_CLUSTERED,
 
 
-class BubbleChart(Chart):
-
-    def __init__(self, *, df, x_col, y_col: str, size_col: str, three_d: bool = False, **kwargs) -> None:
-        """
-
-        :param three_d:
-        :param kwargs:
-        """
-        super().__init__(df=df, **kwargs)
-
-        # override the chart_data initialization for XY- and Bubble-type charts
-        self.chart_data = XyChartData()
-
-        if three_d:
-            self.chart_type = XL_CHART_TYPE.BUBBLE_THREE_D_EFFECT
-        else:
-            self.chart_type = XL_CHART_TYPE.BUBBLE
-
-        self.axis_cols = [x_col, y_col, size_col]
-
-    def prep_chart_data(self) -> None:
-        """
-
-        :return:
-        """
-
-        self.chart_data.categories = self.df.index
-        for column in self.df.columns:
-            self.chart_data.add_series(column, self.df[column])
-
-
 class ColumnChart(Chart):
     chart_types = {
         'THREE_D_COLUMN': XL_CHART_TYPE.THREE_D_COLUMN,  # 3D Column.
@@ -295,7 +278,8 @@ class ColumnChart(Chart):
         # 'PYRAMID_COL_STACKED_100': XL_CHART_TYPE.,  # 100% Stacked Pyramid Column.
     }
 
-    def __init__(self, df, three_d: bool = False, shape='rectangle', stacked: bool = False, normalized: bool = False,
+    def __init__(self, df: pd.DataFrame, three_d: bool = False, shape='rectangle', stacked: bool = False,
+                 normalized: bool = False,
                  **kwargs):
         """
 
@@ -352,7 +336,8 @@ class ColumnChart(Chart):
 
 class LineChart(Chart):
 
-    def __init__(self, df, three_d: bool = False, markers: bool = False, stacked: bool = False, normalized: bool = False,
+    def __init__(self, df: pd.DataFrame, three_d: bool = False, markers: bool = False, stacked: bool = False,
+                 normalized: bool = False,
                  **kwargs):
         """
 
@@ -387,7 +372,7 @@ class LineChart(Chart):
 
 class PieChart(Chart):
 
-    def __init__(self, df, three_d: bool = False, doughnut: bool = False, exploded: bool = False,
+    def __init__(self, df: pd.DataFrame, three_d: bool = False, doughnut: bool = False, exploded: bool = False,
                  compound: bool = False, compound_type: str = 'bar_of_pie', **kwargs):
         """
 
@@ -425,7 +410,7 @@ class PieChart(Chart):
 
 class RadarChart(Chart):
 
-    def __init__(self, df, filled: bool = False, markers: bool = False, **kwargs):
+    def __init__(self, df: pd.DataFrame, filled: bool = False, markers: bool = False, **kwargs):
         """
 
         :param filled:
@@ -444,7 +429,8 @@ class RadarChart(Chart):
 
 class ScatterChart(Chart):
 
-    def __init__(self, df, lines: bool = False, markers: bool = False, smooth: bool = False, **kwargs):
+    def __init__(self, df: pd.DataFrame, x_col: str, y_col: str, lines: bool = False, markers: bool = False,
+                 smooth: bool = False, **kwargs):
         """
 
         :param lines:
@@ -453,6 +439,8 @@ class ScatterChart(Chart):
         :param kwargs:
         """
         super().__init__(df=df, **kwargs)
+
+        self.axis_cols = [x_col, y_col]
 
         if lines:
             if markers:
@@ -468,10 +456,63 @@ class ScatterChart(Chart):
         else:
             self.chart_type = XL_CHART_TYPE.XY_SCATTER,
 
+    def prep_chart_data(self) -> None:
+        """
+
+        :return:
+        """
+        self.chart_data = XyChartData()
+
+        # If multi-index, how many levels, xy or bubble plot must have either 1 or 2 levels to columns
+        if self.df.columns.nlevels == 1:
+            # only one series in dataset
+            series = self.chart_data.add_series('Data')
+            for index, row in self.df.iterrows():
+                series.add_data_point(*[row[_] for _ in self.axis_cols])
+
+        elif self.df.columns.nlevels == 2:
+            # potentially multiple series in dataset
+
+            # get the list of all the axis columns (including size for bubble charts). Grid_pptx will assume that
+            # any level 1 values in the MultiIndex that have all three of these columns should be treated as
+            # separate series.
+            for series_candidate in self.df.columns.get_level_values(0).unique():
+                axis_vals_in_series = self.df.loc[:, (series_candidate, slice(None))] \
+                    .columns.get_level_values(1).tolist()
+
+                # if all vals in the axis_vals_list are included in the axis_vals_in_series, then assume this
+                # is a series and add the series and the values
+                if all(_ in axis_vals_in_series for _ in self.axis_cols):
+                    series = self.chart_data.add_series(series_candidate)
+                    for index, row in self.df.iterrows():
+                        series.add_data_point(*[(series_candidate, row[_]) for _ in self.axis_cols])
+
+        else:
+            raise ValueError('The dataframe\'s columns must have no more than 2 levels.')
+
+
+class BubbleChart(ScatterChart):
+
+    def __init__(self, df: pd.DataFrame, x_col: str, y_col: str, size_col: str, three_d: bool = False,
+                 **kwargs) -> None:
+        """
+
+        :param three_d:
+        :param kwargs:
+        """
+        super().__init__(df=df, **kwargs)
+
+        self.axis_cols = [x_col, y_col, size_col]
+
+        if three_d:
+            self.chart_type = XL_CHART_TYPE.BUBBLE_THREE_D_EFFECT
+        else:
+            self.chart_type = XL_CHART_TYPE.BUBBLE
+
 
 class StockChart(Chart):
 
-    def __init__(self, df, incl_open: bool = False, volume: bool = False, **kwargs):
+    def __init__(self, df: pd.DataFrame, incl_open: bool = False, volume: bool = False, **kwargs):
         """
 
         :param incl_open:
@@ -494,7 +535,7 @@ class StockChart(Chart):
 
 class SurfaceChart(Chart):
 
-    def __init__(self, df, top_view: bool = False, wireframe: bool = False, **kwargs):
+    def __init__(self, df: pd.DataFrame, top_view: bool = False, wireframe: bool = False, **kwargs):
         """
 
         :param top_view:
