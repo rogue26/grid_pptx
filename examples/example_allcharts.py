@@ -73,51 +73,48 @@ if __name__ == '__main__':
     p.add_slide(layout_num=5, design=design, title='Regular Bar charts')
 
     # BubbleChart example
-    df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
-    chart1 = BubbleChart(df=df, three_d=False)
-    chart2 = BubbleChart(df=df, three_d=True)
-    design = Row(12,
-                 Column(6, chart1),
-                 Column(6, chart2))
+    df = pd.DataFrame({'x': [1, 2, 9], 'y': [4, 1, 6], 'size': [7, 8, 2]})
+    chart1 = BubbleChart(df=df, x_col='x', y_col='y', size_col='size', three_d=False)
+    design = Row(12, chart1)
     p.add_slide(layout_num=5, design=design, title='Bubble charts')
 
-    # # ColumnChart example
-    # df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
-    # chart = ColumnChart(df=df, stacked=True, normalized=False)
-    # design = Row(12, chart)
-    # p.add_slide(layout_num=5, design=design, title='my shiny analysis')
-    #
-    # # LineChart example
-    # df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
-    # chart = LineChart(df=df, stacked=True, normalized=False)
-    # design = Row(12, chart)
-    # p.add_slide(layout_num=5, design=design, title='my shiny analysis')
-    #
-    # # PieChart example
+    # ColumnChart example
+    df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
+    chart = ColumnChart(df=df, stacked=True, normalized=False)
+    design = Row(12, chart)
+    p.add_slide(layout_num=5, design=design, title='my shiny analysis')
+
+    # LineChart example
+    df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
+    chart = LineChart(df=df, stacked=True, normalized=False)
+    design = Row(12, chart)
+    p.add_slide(layout_num=5, design=design, title='my shiny analysis')
+
+    # PieChart example
     # df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
     # chart = PieChart(df=df, stacked=True, normalized=False)
     # design = Row(12, chart)
     # p.add_slide(layout_num=5, design=design, title='my shiny analysis')
+
+    # RadarChart example
+    df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
+    chart = RadarChart(df=df, stacked=True, normalized=False)
+    design = Row(12, chart)
+    p.add_slide(layout_num=5, design=design, title='my shiny analysis')
+
+    # ScatterChart example
+    df = pd.DataFrame({'x': [1, 2, 9], 'y': [4, 1, 6], 'size': [7, 8, 2]})
+    chart1 = ScatterChart(df=df, x_col='x', y_col='y', three_d=False)
+    design = Row(12, chart1)
+    p.add_slide(layout_num=5, design=design, title='Scatter charts')
+
+    # StockChart example
+    df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
+    chart = StockChart(df=df, stacked=True, normalized=False)
+    design = Row(12, chart)
+    p.add_slide(layout_num=5, design=design, title='my shiny analysis')
     #
-    # # RadarChart example
-    # df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
-    # chart = RadarChart(df=df, stacked=True, normalized=False)
-    # design = Row(12, chart)
-    # p.add_slide(layout_num=5, design=design, title='my shiny analysis')
-    #
-    # # ScatterChart example
-    # df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
-    # chart = ScatterChart(df=df, stacked=True, normalized=False)
-    # design = Row(12, chart)
-    # p.add_slide(layout_num=5, design=design, title='my shiny analysis')
-    #
-    # # StockChart example
-    # df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
-    # chart = StockChart(df=df, stacked=True, normalized=False)
-    # design = Row(12, chart)
-    # p.add_slide(layout_num=5, design=design, title='my shiny analysis')
-    #
-    # # SurfaceChart example
+    # SurfaceChart example
     # df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
     # chart = SurfaceChart(df=df, stacked=True, normalized=False)
     # design = Row(12, chart)

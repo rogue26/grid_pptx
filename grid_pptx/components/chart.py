@@ -2,7 +2,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pandas as pd
-from pptx.chart.data import CategoryChartData, XyChartData
+
+from pptx.chart.data import CategoryChartData, XyChartData, BubbleChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_TICK_MARK, XL_TICK_LABEL_POSITION
 from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
 from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT
@@ -17,13 +18,14 @@ if TYPE_CHECKING:
 
 class NewInitCaller(type):
     """
-    metaclass which overrides the "__call__" function to automatically call
-    "prep_chart_data" after __init__, even if __init__ has been overridden
+    metaclass which overrides the "__call__" function to automatically call "set_chart_dat_type"
+    "prep_chart_data" methods after __init__, even if __init__ has been overridden
     """
 
     def __call__(cls, *args, **kwargs):
         """Called when you call MyNewClass() """
         obj = type.__call__(cls, *args, **kwargs)
+        obj.set_chart_data_type()
         obj.prep_chart_data()
         return obj
 
@@ -52,7 +54,7 @@ class Chart(GridPanel, metaclass=NewInitCaller):
     def __init__(self, *, df: pd.DataFrame, **kwargs) -> None:
         """
 
-        :param df:
+        :param df: Pandas dataframe containing data for the chart.
         :param kwargs:
         """
         super().__init__(**kwargs)
@@ -86,12 +88,14 @@ class Chart(GridPanel, metaclass=NewInitCaller):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
+    def set_chart_data_type(self) -> None:
+        self.chart_data = CategoryChartData()
+
     def prep_chart_data(self) -> None:
         """
 
         :return:
         """
-        self.chart_data = CategoryChartData()
         self.chart_data.categories = self.df.index
         for column in self.df.columns:
             self.chart_data.add_series(column, self.df[column])
@@ -172,11 +176,13 @@ class AreaChart(Chart):
                  **kwargs):
         """
 
-        :param three_d:
+        :param df: Pandas dataframe containing data for the chart.
+        :param three_d: Whether a 3-D version of the chart should be used
         :param stacked:
         :param normalized:
         :param kwargs:
         """
+
         super().__init__(df=df, **kwargs)
 
         if three_d:
@@ -204,7 +210,8 @@ class BarChart(Chart):
                  **kwargs):
         """
 
-        :param three_d:
+        :param df: Pandas dataframe containing data for the chart.
+        :param three_d: Whether a 3-D version of the chart should be used
         :param shape:
         :param stacked:
         :param normalized:
@@ -283,7 +290,8 @@ class ColumnChart(Chart):
                  **kwargs):
         """
 
-        :param three_d:
+        :param df: Pandas dataframe containing data for the chart.
+        :param three_d: Whether a 3-D version of the chart should be used
         :param shape:
         :param stacked:
         :param normalized:
@@ -341,7 +349,8 @@ class LineChart(Chart):
                  **kwargs):
         """
 
-        :param three_d:
+        :param df: Pandas dataframe containing data for the chart.
+        :param three_d: Whether a 3-D version of the chart should be used
         :param markers:
         :param stacked:
         :param normalized:
@@ -376,7 +385,8 @@ class PieChart(Chart):
                  compound: bool = False, compound_type: str = 'bar_of_pie', **kwargs):
         """
 
-        :param three_d:
+        :param df: Pandas dataframe containing data for the chart.
+        :param three_d: Whether a 3-D version of the chart should be used
         :param doughnut:
         :param exploded:
         :param compound:
@@ -413,6 +423,7 @@ class RadarChart(Chart):
     def __init__(self, df: pd.DataFrame, filled: bool = False, markers: bool = False, **kwargs):
         """
 
+        :param df: Pandas dataframe containing data for the chart.
         :param filled:
         :param markers:
         :param kwargs:
@@ -433,6 +444,9 @@ class ScatterChart(Chart):
                  smooth: bool = False, **kwargs):
         """
 
+        :param df: Pandas dataframe containing data for the chart.
+        :param x_col:
+        :param y_col:
         :param lines:
         :param markers:
         :param smooth:
@@ -456,12 +470,14 @@ class ScatterChart(Chart):
         else:
             self.chart_type = XL_CHART_TYPE.XY_SCATTER,
 
+    def set_chart_data_type(self) -> None:
+        self.chart_data = XyChartData()
+
     def prep_chart_data(self) -> None:
         """
 
         :return:
         """
-        self.chart_data = XyChartData()
 
         # If multi-index, how many levels, xy or bubble plot must have either 1 or 2 levels to columns
         if self.df.columns.nlevels == 1:
@@ -497,10 +513,14 @@ class BubbleChart(ScatterChart):
                  **kwargs) -> None:
         """
 
-        :param three_d:
+        :param df: Pandas dataframe containing data for the chart.
+        :param x_col:
+        :param y_col:
+        :param size_col:
+        :param three_d: Whether a 3-D version of the chart should be used
         :param kwargs:
         """
-        super().__init__(df=df, **kwargs)
+        super().__init__(df=df, x_col=x_col, y_col=y_col, **kwargs)
 
         self.axis_cols = [x_col, y_col, size_col]
 
@@ -509,12 +529,15 @@ class BubbleChart(ScatterChart):
         else:
             self.chart_type = XL_CHART_TYPE.BUBBLE
 
+    def set_chart_data_type(self) -> None:
+        self.chart_data = BubbleChartData()
 
 class StockChart(Chart):
 
     def __init__(self, df: pd.DataFrame, incl_open: bool = False, volume: bool = False, **kwargs):
         """
 
+        :param df: Pandas dataframe containing data for the chart.
         :param incl_open:
         :param volume:
         :param kwargs:
@@ -538,6 +561,7 @@ class SurfaceChart(Chart):
     def __init__(self, df: pd.DataFrame, top_view: bool = False, wireframe: bool = False, **kwargs):
         """
 
+        :param df: Pandas dataframe containing data for the chart.
         :param top_view:
         :param wireframe:
         :param kwargs:
