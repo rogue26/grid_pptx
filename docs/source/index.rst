@@ -11,7 +11,9 @@ Welcome to grid_pptx's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   usage
    modules
+
 
 
 

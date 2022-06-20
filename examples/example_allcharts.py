@@ -17,13 +17,9 @@ if __name__ == '__main__':
 
     # AreaChart example
     df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
-    print('pre')
     chart = AreaChart(df=df, stacked=True, normalized=False)
-    print('pre2')
     design = Row(12, chart)
-    print('pre3')
     p.add_slide(layout_num=5, design=design, title='my shiny analysis')
-    print('pre4')
 
     # BarChart example
     #  NotImplementedError: XML writer for chart type BAR_STACKED (58) not yet implemented
@@ -31,29 +27,18 @@ if __name__ == '__main__':
     # NotImplementedError: XML writer for chart type THREE_D_BAR_STACKED_100 (62) not yet implemented
     df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
     not_implemented = Text(text="N/I")
-    print('a')
+
     chart1a = BarChart(df=df, three_d=True, shape='rectangle', stacked=False, normalized=False)
-    print('b')
     chart2a = BarChart(df=df, three_d=True, shape='cone', stacked=False, normalized=False)
-    print('c')
     chart3a = BarChart(df=df, three_d=True, shape='cylinder', stacked=False, normalized=False)
-    print('d')
     chart4a = BarChart(df=df, three_d=True, shape='pyramid', stacked=False, normalized=False)
-    print('e')
     chart1b = BarChart(df=df, three_d=True, shape='rectangle', stacked=True, normalized=False)
-    print('f')
     chart2b = BarChart(df=df, three_d=True, shape='cone', stacked=True, normalized=False)
-    print('g')
     chart3b = BarChart(df=df, three_d=True, shape='cylinder', stacked=True, normalized=False)
-    print('h')
     chart4b = BarChart(df=df, three_d=True, shape='pyramid', stacked=True, normalized=False)
-    print('i')
     chart1c = BarChart(df=df, three_d=True, shape='rectangle', stacked=True, normalized=True)
-    print('j')
     chart2c = BarChart(df=df, three_d=True, shape='cone', stacked=True, normalized=True)
-    print('k')
     chart3c = BarChart(df=df, three_d=True, shape='cylinder', stacked=True, normalized=True)
-    print('l')
     chart4c = BarChart(df=df, three_d=True, shape='pyramid', stacked=True, normalized=True)
 
     design = Row(12,

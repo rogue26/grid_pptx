@@ -88,12 +88,6 @@ class Column(GridPanel):
         else:
             top_tracker = self.top
             for container in self.containers:
-                print('self = ', self)
-                print('self.left = ', self.left)
-                print('self.width = ', self.width)
-                print('self.top = ', self.top)
-                print('self.height = ', self.height)
-                print('container = ', container)
                 # Left and width will be the same for all columns in row
                 container.left = self.left
                 container.width = self.width
@@ -103,11 +97,6 @@ class Column(GridPanel):
                 container.top = top_tracker
                 container.height = container.value / 12.0 * self.height
 
-                print('container.left = ', container.left)
-                print('container.width = ', container.width)
-                print('container.top = ', container.top)
-                print('container.height = ', container.height)
-                print()
                 container.build(slide)
 
                 top_tracker += container.height
