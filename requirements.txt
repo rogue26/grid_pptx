@@ -2,3 +2,4 @@ python-pptx==0.6.21
 pandas==1.4.2
 sphinx==5.0.2
 sphinx_rtd_theme==1.0.0
+matplotlib==3.5.2

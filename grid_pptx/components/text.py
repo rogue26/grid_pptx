@@ -6,6 +6,7 @@ from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
 from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT
 
 from .panel import GridPanel
+from grid_pptx import colors
 
 # imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
@@ -62,14 +63,14 @@ class Text(GridPanel):
             shape.fill.background()
         else:
             shape.fill.solid()
-            shape.fill.fore_color.rgb = self.color_dict[self.fill_color]
+            shape.fill.fore_color.rgb = colors[self.fill_color]
 
         # configure outline color
         if self.outline_color is None:
             shape.line.fill.background()
         else:
             shape.line.fill.solid()
-            shape.line.color.rgb = self.color_dict[self.outline_color]
+            shape.line.color.rgb = colors[self.outline_color]
 
         # configure text
         p = shape.text_frame.paragraphs[0]
@@ -79,7 +80,7 @@ class Text(GridPanel):
         font = run.font
         font.size = Pt(self.fontsize)
         font.bold = self.bold
-        font.color.rgb = self.color_dict[self.fontcolor]
+        font.color.rgb = colors[self.fontcolor]
 
 
 class Bullets(Text):

@@ -1,17 +1,13 @@
 from __future__ import annotations
 
 from pptx.util import Inches
-from pptx.dml.color import RGBColor
+
 
 
 class GridPanel:
     """
     Base class for Row, Column, and all components, including charts, tables, text, images, etc.
     """
-    color_dict = {
-        'black': RGBColor(0, 0, 0),
-        'white': RGBColor(255, 255, 255),
-    }
 
     def __init__(self, *, left: float = None, top: float = None, width: float = None, height: float = None,
                  left_margin: float = 0, top_margin: float = 0, right_margin: float = 0,

@@ -171,7 +171,9 @@ class Chart(GridPanel, metaclass=NewInitCaller):
 
 
 class AreaChart(Chart):
-
+    """
+    A variation of a line graph, in which areas under the line are filled in.
+    """
     def __init__(self, df: pd.DataFrame, three_d: bool = False, stacked: bool = False, normalized: bool = False,
                  **kwargs):
         """
@@ -179,7 +181,8 @@ class AreaChart(Chart):
         :param df: Pandas dataframe containing data for the chart.
         :param three_d: Whether a 3-D version of the chart should be used
         :param stacked:
-        :param normalized:
+        :param normalized: Whether values should be scaled such that they sum to 100%. Only applicable \
+                if ``stacked=TRUE``.
         :param kwargs:
         """
 
@@ -204,7 +207,9 @@ class AreaChart(Chart):
 
 
 class BarChart(Chart):
-
+    """
+    <Description of Bar Chart>
+    """
     def __init__(self, df: pd.DataFrame, three_d: bool = False, shape: str = 'rectangle', stacked: bool = False,
                  normalized: bool = False,
                  **kwargs):
