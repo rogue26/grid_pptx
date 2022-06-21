@@ -3,19 +3,35 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to grid_pptx's documentation!
-=====================================
+grid_pptx - Simplifying the PowerPoint creation process in Python
+=================================================================
 
+grid_pptx is a tool for quickly creating PowerPoint documents, especially those involving the presentation of data.
+grid_pptx builds on the venerable python-pptx with a more highly abstracted API for common tasks, a Bootstrap-inspired
+grid layout, and the ability to quickly create charts and tables from Pandas dataframes.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   usage
+   overview
+   quickstart
+   gridlayout
+   charts
+   colors
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API reference:
+
    modules
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Changelog:
 
-
+   changes
 
 Indices and tables
 ==================

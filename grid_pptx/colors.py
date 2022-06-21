@@ -1,3 +1,7 @@
+"""
+A module level docstring
+"""
+
 import matplotlib.colors as mcolors
 from pptx.dml.color import RGBColor
 
