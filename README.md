@@ -12,7 +12,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/rogue26/grid_pptx">
-    <img src="docs/source/_static/logo.png" alt="Logo" width="133" height="80">
+    <img src="docs/source/_static/logo.png" alt="Logo" width="266" height="160">
   </a>
 
 <h3 align="center">grid_pptx</h3>
