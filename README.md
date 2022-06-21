@@ -24,10 +24,10 @@ the presentation of data. grid_pptx builds on the venerable python-pptx with a m
 abstracted API for common tasks, a Bootstrap-inspired grid layout, and the ability to 
 quickly create charts and tables from Pandas dataframes.
     <br />
+    <br />
     <a href="https://grid_pptx.readthedocs.io/en/latest"><strong>Explore the docs »</strong></a>
     <br />
     <a href="https://github.com/rogue26/grid_pptx"><strong>Explore the code »</strong></a>
-    <br />
     <br />
     <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
     ·
