@@ -6,7 +6,6 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
 
 <!-- PROJECT LOGO -->
 <br />
@@ -29,9 +28,9 @@ quickly create charts and tables from Pandas dataframes.
     <br />
     <a href="https://github.com/rogue26/grid_pptx"><strong>Explore the code »</strong></a>
     <br />
-    <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
+    <a href="https://github.com/rogue26/grid_pptx/issues">Report Bug</a>
     ·
-    <a href="https://github.com/github_username/repo_name/issues">Request Feature</a>
+    <a href="https://github.com/rogue26/grid_pptx/issues">Request Feature</a>
   </p>
 </div>
 
@@ -212,5 +211,4 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 [license-shield]: https://img.shields.io/github/license/rogue26/grid_pptx.svg?style=for-the-badge
 [license-url]: https://github.com/rogue26/grid_pptx/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/maxhill1
 [product-screenshot]: images/screenshot.png
