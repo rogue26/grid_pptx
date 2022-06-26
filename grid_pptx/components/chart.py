@@ -88,6 +88,9 @@ class Chart(GridPanel, metaclass=NewInitCaller):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
+    def evaluate_dataframe(self):
+        return None
+
     def set_chart_data_type(self) -> None:
         self.chart_data = CategoryChartData()
 
@@ -174,6 +177,7 @@ class AreaChart(Chart):
     """
     A variation of a line graph, in which areas under the line are filled in.
     """
+
     def __init__(self, df: pd.DataFrame, three_d: bool = False, stacked: bool = False, normalized: bool = False,
                  **kwargs):
         """
@@ -210,6 +214,7 @@ class BarChart(Chart):
     """
     <Description of Bar Chart>
     """
+
     def __init__(self, df: pd.DataFrame, three_d: bool = False, shape: str = 'rectangle', stacked: bool = False,
                  normalized: bool = False,
                  **kwargs):
@@ -536,6 +541,7 @@ class BubbleChart(ScatterChart):
 
     def set_chart_data_type(self) -> None:
         self.chart_data = BubbleChartData()
+
 
 class StockChart(Chart):
 

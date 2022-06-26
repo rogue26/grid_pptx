@@ -6,6 +6,9 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
+[![Coverage][coverage-shield]][coverage-url]
+
+
 
 <!-- PROJECT LOGO -->
 <br />
@@ -199,7 +202,7 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+<!-- https://www.markdownguide.org/basic-syntax/#referencelicense-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/rogue26/grid_pptx.svg?style=for-the-badge
 [contributors-url]: https://github.com/rogue26/grid_pptx/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/rogue26/grid_pptx.svg?style=for-the-badge
@@ -209,6 +212,11 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 [issues-shield]: https://img.shields.io/github/issues/rogue26/grid_pptx.svg?style=for-the-badge
 [issues-url]: https://github.com/rogue26/grid_pptx/issues
 [license-shield]: https://img.shields.io/github/license/rogue26/grid_pptx.svg?style=for-the-badge
+[coverage-shield]: https://img.shields.io//coveralls/rogue26/grid_pptx.svg?style=for-the-badge
+[coverage-url]: https://google.com
+
 [license-url]: https://github.com/rogue26/grid_pptx/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [product-screenshot]: images/screenshot.png
+
+

@@ -66,7 +66,7 @@ text = Text(text='some highly informative text here')
 ```
 
 ## Designing a slide
-When displaying data or the results of data analysis, a simple and effective slide could consist of a simple layout with
+When displaying data or the results of data analysis, an effective slide could consist of a simple layout with
 1-2 charts or tables and a text box highlighting the takeaways. The popular Bootstrap CSS framework allows developers 
 to quickly create a [flexible grid layout](https://getbootstrap.com/docs/4.0/layout/grid/) by dividing any element 
 into 12 segments. 12 is a useful number because it can be divided in half (6 - 6), thirds (4 - 4 - 4), 
