@@ -1,13 +1,13 @@
 import pytest
 
 import pandas as pd
-from grid_pptx.components import chart
+from grid_pptx.components.chart import Chart
 
 
 @pytest.fixture
 def test_chart():
     df1 = pd.DataFrame({'a': [1, 2, 3], 'b': [9, 8, 7], 'c': [7, 3, 3]})
-    return chart.Chart(df=df1)
+    return Chart(df=df1)
 
 
 class TestChart:
