@@ -212,7 +212,7 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 [issues-shield]: https://img.shields.io/github/issues/rogue26/grid_pptx.svg?style=for-the-badge
 [issues-url]: https://github.com/rogue26/grid_pptx/issues
 [license-shield]: https://img.shields.io/github/license/rogue26/grid_pptx.svg?style=for-the-badge
-[coverage-shield]: https://img.shields.io//coveralls/rogue26/grid_pptx.svg?style=for-the-badge
+[coverage-shield]: https://img.shields.io//coveralls/github/rogue26/grid_pptx.svg?style=for-the-badge
 [coverage-url]: https://google.com
 
 [license-url]: https://github.com/rogue26/grid_pptx/blob/master/LICENSE
