@@ -7,7 +7,7 @@
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 [![Coverage][coverage-shield]][coverage-url]
-
+[![Coverage][build-shield]][coverage-url]
 
 
 <!-- PROJECT LOGO -->
@@ -213,8 +213,8 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 [issues-url]: https://github.com/rogue26/grid_pptx/issues
 [license-shield]: https://img.shields.io/github/license/rogue26/grid_pptx.svg?style=for-the-badge
 [coverage-shield]: https://img.shields.io/coveralls/github/rogue26/grid_pptx.svg?style=for-the-badge
-[coverage-url]: https://google.com
-
+[coverage-url]: https://coveralls.io/github/rogue26/grid_pptx
+[build-shield]: https://img.shields.io/circleci/build/github/rogue26/grid_pptx/master.svg?style=for-the-badge
 [license-url]: https://github.com/rogue26/grid_pptx/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [product-screenshot]: images/screenshot.png
