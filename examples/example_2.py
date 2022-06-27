@@ -2,7 +2,7 @@ from grid_pptx import GridPresentation, Row, Column
 from grid_pptx.components import Text, AreaChart, Table
 import pandas as pd
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     df = pd.DataFrame({'a': [1, 2, 9], 'b': [4, 1, 6], 'c': [7, 8, 2]})
 
     p = GridPresentation(

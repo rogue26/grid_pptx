@@ -40,7 +40,9 @@ jobs:
           # This assumes pytest is installed via the install-package step above
           # command: pytest grid_pptx/test/unit
           command: coverage run --source=grid_pptx -m pytest grid_pptx/test/unit grid_pptx/test/integration
-
+      - run:
+          name: Store test summary
+          command: store_test_results
       - run:
           name: Upload to coveralls
           command: coveralls

@@ -1,7 +1,7 @@
 from grid_pptx import GridPresentation, Row, Column
 from grid_pptx.components import Text
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     a = Text(text='a', outline_color='black')
     b = Text(text='b', outline_color='black')
     c = Text(text='c', outline_color='black')

@@ -6,7 +6,7 @@ from grid_pptx.components import (
 )
 import pandas as pd
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     p = GridPresentation(
         slide_size='16_9',
         header_height=1.5,
