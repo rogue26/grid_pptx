@@ -11,7 +11,7 @@ def test_chart():
 
 
 class TestChart:
-    def test_init_has_values(self):
+    def test_init_has_values(self, test_chart):
 
         list_of_attributes = [
             'df', 'chart_type', 'chart_data', 'has_title', 'has_legend', 'smooth_lines', 'x_minor_tick_marks',
