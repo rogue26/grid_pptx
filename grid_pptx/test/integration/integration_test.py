@@ -1,5 +1,5 @@
 import pytest
 
 
-def integration_test():
+def test_integration():
     assert True
