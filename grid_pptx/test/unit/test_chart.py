@@ -12,7 +12,7 @@ def test_chart():
 
 class TestChart:
     def test_evaluate_dataframe(self):
-        assert True
+        assert False
 
     def test_set_chart_data_type(self):
         assert True
