@@ -36,9 +36,13 @@ jobs:
           # app-dir: ~/project/package-directory/  # If you're requirements.txt isn't in the root directory.
           # pip-dependency-file: test-requirements.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
       - run:
-          name: Run tests
+          name: Run unit tests
           # This assumes pytest is installed via the install-package step above
-          command: pytest
+          command: pytest grid_pptx/test/unit
+      - run:
+          name: Run integration tests
+          # This assumes pytest is installed via the install-package step above
+          command: pytest grid_pptx/test/integration
       - run:
           name: Upload to coveralls
-          command: coverage run --source=grid_pptx -m pytest grid_pptx/test/unit grid_pptx/test/integration
+          command: coveralls
