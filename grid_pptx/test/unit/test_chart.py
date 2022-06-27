@@ -11,6 +11,22 @@ def test_chart():
 
 
 class TestChart:
+    def test_init_has_values(self):
+
+        list_of_attributes = [
+            'df', 'chart_type', 'chart_data', 'has_title', 'has_legend', 'smooth_lines', 'x_minor_tick_marks',
+            'x_major_tick_marks', 'x_has_minor_gridlines', 'x_has_major_gridlines', 'x_tick_label_position',
+            'x_tick_label_italic', 'x_tick_label_fontsize', 'y_minor_tick_marks', 'y_major_tick_marks',
+            'y_has_minor_gridlines', 'y_has_major_gridlines', 'y_tick_label_position', 'y_tick_label_italic',
+            'y_tick_label_fontsize']
+
+        # check if chart object has all expected attributes
+        assert all(hasattr(test_chart, attr) for attr in list_of_attributes)
+
+        # check that chart object has only expected attributes
+        # assert all(attr in test_chart.__dict__.keys() for attr in list_of_attributes)
+
+
     def test_evaluate_dataframe(self):
         assert True
 
