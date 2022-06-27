@@ -1,7 +1,7 @@
 import pytest
 
 import pandas as pd
-from grid_pptx.components import chart
+from    grid_pptx.components import chart
 
 
 @pytest.fixture
