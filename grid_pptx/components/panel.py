@@ -3,7 +3,6 @@ from __future__ import annotations
 from pptx.util import Inches
 
 
-
 class GridPanel:
     """
     Base class for Row, Column, and all components, including charts, tables, text, images, etc.

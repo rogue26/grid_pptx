@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 import pandas as pd
 
@@ -14,6 +14,33 @@ from .panel import GridPanel
 # imports for type hints that would normally cause circular imports
 if TYPE_CHECKING:
     from grid_pptx import GridSlide
+
+
+class ChartAxis:
+    def __init__(
+            self, minor_tick_marks: str = 'none', major_tick_marks: str = 'inside', has_minor_gridlines: bool = False,
+            has_major_gridlines: bool = False, tick_label_position: str = 'next_to_axis',
+            tick_label_italic: bool = False, tick_label_fontsize: int = 16
+    ) -> None:
+        self.minor_tick_marks = minor_tick_marks
+        self.major_tick_marks = major_tick_marks
+        self.has_minor_gridlines = has_minor_gridlines
+        self.has_major_gridlines = has_major_gridlines
+        self.tick_label_position = tick_label_position
+        self.tick_label_italic = tick_label_italic
+        self.tick_label_fontsize = tick_label_fontsize
+
+
+class XAxis(ChartAxis):
+    def __init__(self) -> None:
+        super().__init__()
+        pass
+
+
+class YAxis(ChartAxis):
+    def __init__(self) -> None:
+        super().__init__()
+        pass
 
 
 class NewInitCaller(type):
@@ -51,42 +78,48 @@ class Chart(GridPanel, metaclass=NewInitCaller):
         'none': XL_TICK_LABEL_POSITION.NONE,
     }
 
-    def __init__(self, *, df: pd.DataFrame, **kwargs) -> None:
+    def __init__(
+            self, *,
+            df: pd.DataFrame,
+            chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
+            has_title: bool = False,
+            has_legend: bool = True,
+            x_axis: XAxis = None,
+            y_axis: YAxis = None
+    ) -> None:
         """
 
         :param df: Pandas dataframe containing data for the chart.
-        :param kwargs:
+        :param chart_data:
+        :param chart_type:
+        :param has_title:
+        :param has_legend:
+        :param x_axis:
+        :param y_axis:
         """
-        super().__init__(**kwargs)
+        super().__init__()
 
         self.df = df
-        self.chart_type = None
-        self.chart_data = None
+        self.chart_data = chart_data
 
         # default chart parameters
-        self.has_title = False
-        self.has_legend = True
+        self.has_title = has_title
+        self.has_legend = has_legend
         self.smooth_lines = False
 
-        self.x_minor_tick_marks = 'none'  # options are 'none', 'cross', 'inside', 'outside
-        self.x_major_tick_marks = 'inside'  # options are 'none', 'cross', 'inside', 'outside
-        self.x_has_minor_gridlines = False
-        self.x_has_major_gridlines = False
-        self.x_tick_label_position = 'next_to_axis'  # options are 'none', 'high', 'low', 'next_to_axis'
-        self.x_tick_label_italic = False
-        self.x_tick_label_fontsize = 16
+        if x_axis is None:
+            self.x_axis = XAxis()
+        elif isinstance(x_axis, XAxis):
+            self.x_axis = x_axis
+        else:
+            raise ValueError('x_axis must be an instance of XAxis or left blank.')
 
-        self.y_minor_tick_marks = 'none'  # options are 'none', 'cross', 'inside', 'outside'
-        self.y_major_tick_marks = 'inside'  # options are 'none', 'cross', 'inside', 'outside'
-        self.y_has_minor_gridlines = False
-        self.y_has_major_gridlines = False
-        self.y_tick_label_position = 'next_to_axis'  # options are 'none', 'high', 'low', 'next_to_axis'
-        self.y_tick_label_italic = False
-        self.y_tick_label_fontsize = 16
-
-        # set any attributes that have been supplied in kwargs
-        for k, v in kwargs.items():
-            setattr(self, k, v)
+        if y_axis is None:
+            self.y_axis = YAxis()
+        elif isinstance(y_axis, YAxis):
+            self.y_axis = y_axis
+        else:
+            raise ValueError('y_axis must be an instance of YAxis or left blank.')
 
     def evaluate_dataframe(self):
         return None
@@ -178,8 +211,19 @@ class AreaChart(Chart):
     A variation of a line graph, in which areas under the line are filled in.
     """
 
-    def __init__(self, df: pd.DataFrame, three_d: bool = False, stacked: bool = False, normalized: bool = False,
-                 **kwargs):
+    def __init__(
+            self, *,
+            df: pd.DataFrame,
+            chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
+            has_title: bool = False,
+            has_legend: bool = True,
+            x_axis: XAxis = None,
+            y_axis: YAxis = None,
+
+            three_d: bool = False,
+            stacked: bool = False,
+            normalized: bool = False,
+    ) -> None:
         """
 
         :param df: Pandas dataframe containing data for the chart.
@@ -190,7 +234,9 @@ class AreaChart(Chart):
         :param kwargs:
         """
 
-        super().__init__(df=df, **kwargs)
+        super().__init__(
+            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
+        )
 
         if three_d:
             if stacked:
@@ -215,9 +261,20 @@ class BarChart(Chart):
     <Description of Bar Chart>
     """
 
-    def __init__(self, df: pd.DataFrame, three_d: bool = False, shape: str = 'rectangle', stacked: bool = False,
-                 normalized: bool = False,
-                 **kwargs):
+    def __init__(
+            self, *,
+            df: pd.DataFrame,
+            chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
+            has_title: bool = False,
+            has_legend: bool = True,
+            x_axis: XAxis = None,
+            y_axis: YAxis = None,
+
+            three_d: bool = False,
+            shape: str = 'rectangle',
+            stacked: bool = False,
+            normalized: bool = False
+    ) -> None:
         """
 
         :param df: Pandas dataframe containing data for the chart.
@@ -227,7 +284,9 @@ class BarChart(Chart):
         :param normalized:
         :param kwargs:
         """
-        super().__init__(df=df, **kwargs)
+        super().__init__(
+            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
+        )
 
         if three_d:
             if shape == 'rectangle':
@@ -295,20 +354,39 @@ class ColumnChart(Chart):
         # 'PYRAMID_COL_STACKED_100': XL_CHART_TYPE.,  # 100% Stacked Pyramid Column.
     }
 
-    def __init__(self, df: pd.DataFrame, three_d: bool = False, shape='rectangle', stacked: bool = False,
-                 normalized: bool = False,
-                 **kwargs):
+    def __init__(
+            self, *,
+            df: pd.DataFrame,
+            chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
+            has_title: bool = False,
+            has_legend: bool = True,
+            x_axis: XAxis = None,
+            y_axis: YAxis = None,
+
+            three_d: bool = False,
+            shape='rectangle',
+            stacked: bool = False,
+            normalized: bool = False
+    ) -> None:
         """
 
         :param df: Pandas dataframe containing data for the chart.
+        :param chart_data:
+        :param has_title:
+        :param has_legend:
+        :param x_axis:
+        :param y_axis:
         :param three_d: Whether a 3-D version of the chart should be used
         :param shape:
         :param stacked:
         :param normalized:
         :param kwargs:
         """
-        super().__init__(df=df, **kwargs)
+        super().__init__(
+            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
+        )
 
+        # set chart_type
         if three_d:
             if shape == 'rectangle':
                 if stacked:
@@ -354,19 +432,37 @@ class ColumnChart(Chart):
 
 class LineChart(Chart):
 
-    def __init__(self, df: pd.DataFrame, three_d: bool = False, markers: bool = False, stacked: bool = False,
-                 normalized: bool = False,
-                 **kwargs):
+    def __init__(
+            self, *,
+            df: pd.DataFrame,
+            chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
+            has_title: bool = False,
+            has_legend: bool = True,
+            x_axis: XAxis = None,
+            y_axis: YAxis = None,
+
+            three_d: bool = False,
+            markers: bool = False,
+            stacked: bool = False,
+            normalized: bool = False
+    ) -> None:
         """
 
         :param df: Pandas dataframe containing data for the chart.
+        :param chart_data:
+        :param has_title:
+        :param has_legend:
+        :param x_axis:
+        :param y_axis:
+
         :param three_d: Whether a 3-D version of the chart should be used
         :param markers:
         :param stacked:
         :param normalized:
-        :param kwargs:
         """
-        super().__init__(df=df, **kwargs)
+        super().__init__(
+            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
+        )
 
         if three_d:
             self.chart_type = XL_CHART_TYPE.THREE_D_LINE
@@ -391,19 +487,38 @@ class LineChart(Chart):
 
 class PieChart(Chart):
 
-    def __init__(self, df: pd.DataFrame, three_d: bool = False, doughnut: bool = False, exploded: bool = False,
-                 compound: bool = False, compound_type: str = 'bar_of_pie', **kwargs):
+    def __init__(
+            self, *,
+            df: pd.DataFrame,
+            chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
+            has_title: bool = False,
+            has_legend: bool = True,
+            x_axis: XAxis = None,
+            y_axis: YAxis = None,
+
+            three_d: bool = False,
+            doughnut: bool = False,
+            exploded: bool = False,
+            compound: bool = False,
+            compound_type: str = 'bar_of_pie'
+    ) -> None:
         """
 
         :param df: Pandas dataframe containing data for the chart.
+        :param chart_data:
+        :param has_title:
+        :param has_legend:
+        :param x_axis:
+        :param y_axis:
         :param three_d: Whether a 3-D version of the chart should be used
         :param doughnut:
         :param exploded:
         :param compound:
         :param compound_type:
-        :param kwargs:
         """
-        super().__init__(df=df, **kwargs)
+        super().__init__(
+            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
+        )
 
         if three_d:
             if exploded:
@@ -430,7 +545,18 @@ class PieChart(Chart):
 
 class RadarChart(Chart):
 
-    def __init__(self, df: pd.DataFrame, filled: bool = False, markers: bool = False, **kwargs):
+    def __init__(
+            self, *,
+            df: pd.DataFrame,
+            chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
+            has_title: bool = False,
+            has_legend: bool = True,
+            x_axis: XAxis = None,
+            y_axis: YAxis = None,
+
+            filled: bool = False,
+            markers: bool = False
+    ) -> None:
         """
 
         :param df: Pandas dataframe containing data for the chart.
@@ -438,7 +564,9 @@ class RadarChart(Chart):
         :param markers:
         :param kwargs:
         """
-        super().__init__(df=df, **kwargs)
+        super().__init__(
+            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
+        )
 
         if filled:
             self.chart_type = XL_CHART_TYPE.RADAR_FILLED
@@ -450,8 +578,21 @@ class RadarChart(Chart):
 
 class ScatterChart(Chart):
 
-    def __init__(self, df: pd.DataFrame, x_col: str, y_col: str, lines: bool = False, markers: bool = False,
-                 smooth: bool = False, **kwargs):
+    def __init__(
+            self, *,
+            df: pd.DataFrame,
+            chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
+            has_title: bool = False,
+            has_legend: bool = True,
+            x_axis: XAxis = None,
+            y_axis: YAxis = None,
+
+            x_col: str,
+            y_col: str,
+            lines: bool = False,
+            markers: bool = False,
+            smooth: bool = False
+    ) -> None:
         """
 
         :param df: Pandas dataframe containing data for the chart.
@@ -462,7 +603,9 @@ class ScatterChart(Chart):
         :param smooth:
         :param kwargs:
         """
-        super().__init__(df=df, **kwargs)
+        super().__init__(
+            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
+        )
 
         self.axis_cols = [x_col, y_col]
 
@@ -519,8 +662,20 @@ class ScatterChart(Chart):
 
 class BubbleChart(ScatterChart):
 
-    def __init__(self, df: pd.DataFrame, x_col: str, y_col: str, size_col: str, three_d: bool = False,
-                 **kwargs) -> None:
+    def __init__(
+            self, *,
+            df: pd.DataFrame,
+            chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
+            has_title: bool = False,
+            has_legend: bool = True,
+            x_axis: XAxis = None,
+            y_axis: YAxis = None,
+
+            x_col: str,
+            y_col: str,
+            size_col: str,
+            three_d: bool = False
+    ) -> None:
         """
 
         :param df: Pandas dataframe containing data for the chart.
@@ -530,7 +685,9 @@ class BubbleChart(ScatterChart):
         :param three_d: Whether a 3-D version of the chart should be used
         :param kwargs:
         """
-        super().__init__(df=df, x_col=x_col, y_col=y_col, **kwargs)
+        super().__init__(
+            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
+        )
 
         self.axis_cols = [x_col, y_col, size_col]
 
@@ -545,7 +702,18 @@ class BubbleChart(ScatterChart):
 
 class StockChart(Chart):
 
-    def __init__(self, df: pd.DataFrame, incl_open: bool = False, volume: bool = False, **kwargs):
+    def __init__(
+            self, *,
+            df: pd.DataFrame,
+            chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
+            has_title: bool = False,
+            has_legend: bool = True,
+            x_axis: XAxis = None,
+            y_axis: YAxis = None,
+
+            incl_open: bool = False,
+            volume: bool = False
+    ) -> None:
         """
 
         :param df: Pandas dataframe containing data for the chart.
@@ -553,7 +721,9 @@ class StockChart(Chart):
         :param volume:
         :param kwargs:
         """
-        super().__init__(df=df, **kwargs)
+        super().__init__(
+            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
+        )
 
         if incl_open:  #: note: "incl_open" was used instead of "open" to avoid shadowing builtin "open"
             if volume:
@@ -569,7 +739,18 @@ class StockChart(Chart):
 
 class SurfaceChart(Chart):
 
-    def __init__(self, df: pd.DataFrame, top_view: bool = False, wireframe: bool = False, **kwargs):
+    def __init__(
+            self, *,
+            df: pd.DataFrame,
+            chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
+            has_title: bool = False,
+            has_legend: bool = True,
+            x_axis: XAxis = None,
+            y_axis: YAxis = None,
+
+            top_view: bool = False,
+            wireframe: bool = False
+    ) -> None:
         """
 
         :param df: Pandas dataframe containing data for the chart.
@@ -577,7 +758,9 @@ class SurfaceChart(Chart):
         :param wireframe:
         :param kwargs:
         """
-        super().__init__(df=df, **kwargs)
+        super().__init__(
+            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
+        )
 
         if top_view:
             if wireframe:
