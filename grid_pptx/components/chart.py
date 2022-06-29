@@ -18,10 +18,17 @@ if TYPE_CHECKING:
 
 class ChartAxis:
     def __init__(
-            self, minor_tick_marks: str = 'none', major_tick_marks: str = 'inside', has_minor_gridlines: bool = False,
-            has_major_gridlines: bool = False, tick_label_position: str = 'next_to_axis',
-            tick_label_italic: bool = False, tick_label_fontsize: int = 16
+            self, *,
+            gridchart=None,
+            minor_tick_marks: str = 'none',
+            major_tick_marks: str = 'inside',
+            has_minor_gridlines: bool = False,
+            has_major_gridlines: bool = False,
+            tick_label_position: str = 'next_to_axis',
+            tick_label_italic: bool = False,
+            tick_label_fontsize: int = 16
     ) -> None:
+        self.gridchart = gridchart
         self.minor_tick_marks = minor_tick_marks
         self.major_tick_marks = major_tick_marks
         self.has_minor_gridlines = has_minor_gridlines
@@ -29,18 +36,6 @@ class ChartAxis:
         self.tick_label_position = tick_label_position
         self.tick_label_italic = tick_label_italic
         self.tick_label_fontsize = tick_label_fontsize
-
-
-class XAxis(ChartAxis):
-    def __init__(self) -> None:
-        super().__init__()
-        pass
-
-
-class YAxis(ChartAxis):
-    def __init__(self) -> None:
-        super().__init__()
-        pass
 
 
 class NewInitCaller(type):
@@ -57,7 +52,7 @@ class NewInitCaller(type):
         return obj
 
 
-class Chart(GridPanel, metaclass=NewInitCaller):
+class GridChart(GridPanel, metaclass=NewInitCaller):
     """
     Base class for all charts
     """
@@ -84,8 +79,8 @@ class Chart(GridPanel, metaclass=NewInitCaller):
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
             has_title: bool = False,
             has_legend: bool = True,
-            x_axis: XAxis = None,
-            y_axis: YAxis = None
+            x_axis: ChartAxis = None,
+            y_axis: ChartAxis = None
     ) -> None:
         """
 
@@ -101,6 +96,7 @@ class Chart(GridPanel, metaclass=NewInitCaller):
 
         self.df = df
         self.chart_data = chart_data
+        self.chart_type = None  # initialized in subclasses -- here as a placeholder
 
         # default chart parameters
         self.has_title = has_title
@@ -108,18 +104,20 @@ class Chart(GridPanel, metaclass=NewInitCaller):
         self.smooth_lines = False
 
         if x_axis is None:
-            self.x_axis = XAxis()
-        elif isinstance(x_axis, XAxis):
+            self.x_axis = ChartAxis(gridchart=self)
+        elif isinstance(x_axis, ChartAxis):
             self.x_axis = x_axis
+            self.x_axis.gridchart = self
         else:
-            raise ValueError('x_axis must be an instance of XAxis or left blank.')
+            raise ValueError('x_axis must be an instance of ChartAxis or left blank.')
 
         if y_axis is None:
-            self.y_axis = YAxis()
-        elif isinstance(y_axis, YAxis):
+            self.y_axis = ChartAxis(gridchart=self)
+        elif isinstance(y_axis, ChartAxis):
             self.y_axis = y_axis
+            self.y_axis.gridchart = self
         else:
-            raise ValueError('y_axis must be an instance of YAxis or left blank.')
+            raise ValueError('y_axis must be an instance of ChartAxis or left blank.')
 
     def evaluate_dataframe(self):
         return None
@@ -206,7 +204,7 @@ class Chart(GridPanel, metaclass=NewInitCaller):
             # x_axis.tick_labels.number_format = '0%'
 
 
-class AreaChart(Chart):
+class AreaChart(GridChart):
     """
     A variation of a line graph, in which areas under the line are filled in.
     """
@@ -217,8 +215,8 @@ class AreaChart(Chart):
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
             has_title: bool = False,
             has_legend: bool = True,
-            x_axis: XAxis = None,
-            y_axis: YAxis = None,
+            x_axis: ChartAxis = None,
+            y_axis: ChartAxis = None,
 
             three_d: bool = False,
             stacked: bool = False,
@@ -256,7 +254,7 @@ class AreaChart(Chart):
                 self.chart_type = XL_CHART_TYPE.AREA
 
 
-class BarChart(Chart):
+class BarChart(GridChart):
     """
     <Description of Bar Chart>
     """
@@ -267,8 +265,8 @@ class BarChart(Chart):
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
             has_title: bool = False,
             has_legend: bool = True,
-            x_axis: XAxis = None,
-            y_axis: YAxis = None,
+            x_axis: ChartAxis = None,
+            y_axis: ChartAxis = None,
 
             three_d: bool = False,
             shape: str = 'rectangle',
@@ -331,7 +329,7 @@ class BarChart(Chart):
                 self.chart_type = XL_CHART_TYPE.BAR_CLUSTERED,
 
 
-class ColumnChart(Chart):
+class ColumnChart(GridChart):
     chart_types = {
         'THREE_D_COLUMN': XL_CHART_TYPE.THREE_D_COLUMN,  # 3D Column.
         # 'THREE_D_COLUMN_CLUSTERED': XL_CHART_TYPE.,  # 3D Clustered Column.
@@ -360,8 +358,8 @@ class ColumnChart(Chart):
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
             has_title: bool = False,
             has_legend: bool = True,
-            x_axis: XAxis = None,
-            y_axis: YAxis = None,
+            x_axis: ChartAxis = None,
+            y_axis: ChartAxis = None,
 
             three_d: bool = False,
             shape='rectangle',
@@ -430,7 +428,7 @@ class ColumnChart(Chart):
                 self.chart_type = XL_CHART_TYPE.COLUMN_CLUSTERED,
 
 
-class LineChart(Chart):
+class LineChart(GridChart):
 
     def __init__(
             self, *,
@@ -438,8 +436,8 @@ class LineChart(Chart):
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
             has_title: bool = False,
             has_legend: bool = True,
-            x_axis: XAxis = None,
-            y_axis: YAxis = None,
+            x_axis: ChartAxis = None,
+            y_axis: ChartAxis = None,
 
             three_d: bool = False,
             markers: bool = False,
@@ -485,7 +483,7 @@ class LineChart(Chart):
                     self.chart_type = XL_CHART_TYPE.LINE
 
 
-class PieChart(Chart):
+class PieChart(GridChart):
 
     def __init__(
             self, *,
@@ -493,8 +491,8 @@ class PieChart(Chart):
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
             has_title: bool = False,
             has_legend: bool = True,
-            x_axis: XAxis = None,
-            y_axis: YAxis = None,
+            x_axis: ChartAxis = None,
+            y_axis: ChartAxis = None,
 
             three_d: bool = False,
             doughnut: bool = False,
@@ -543,7 +541,7 @@ class PieChart(Chart):
                     self.chart_type = XL_CHART_TYPE.PIE
 
 
-class RadarChart(Chart):
+class RadarChart(GridChart):
 
     def __init__(
             self, *,
@@ -551,8 +549,8 @@ class RadarChart(Chart):
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
             has_title: bool = False,
             has_legend: bool = True,
-            x_axis: XAxis = None,
-            y_axis: YAxis = None,
+            x_axis: ChartAxis = None,
+            y_axis: ChartAxis = None,
 
             filled: bool = False,
             markers: bool = False
@@ -562,7 +560,6 @@ class RadarChart(Chart):
         :param df: Pandas dataframe containing data for the chart.
         :param filled:
         :param markers:
-        :param kwargs:
         """
         super().__init__(
             df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
@@ -576,7 +573,7 @@ class RadarChart(Chart):
             self.chart_type = XL_CHART_TYPE.RADAR
 
 
-class ScatterChart(Chart):
+class ScatterChart(GridChart):
 
     def __init__(
             self, *,
@@ -584,8 +581,8 @@ class ScatterChart(Chart):
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
             has_title: bool = False,
             has_legend: bool = True,
-            x_axis: XAxis = None,
-            y_axis: YAxis = None,
+            x_axis: ChartAxis = None,
+            y_axis: ChartAxis = None,
 
             x_col: str,
             y_col: str,
@@ -601,7 +598,6 @@ class ScatterChart(Chart):
         :param lines:
         :param markers:
         :param smooth:
-        :param kwargs:
         """
         super().__init__(
             df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
@@ -668,8 +664,8 @@ class BubbleChart(ScatterChart):
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
             has_title: bool = False,
             has_legend: bool = True,
-            x_axis: XAxis = None,
-            y_axis: YAxis = None,
+            x_axis: ChartAxis = None,
+            y_axis: ChartAxis = None,
 
             x_col: str,
             y_col: str,
@@ -683,7 +679,6 @@ class BubbleChart(ScatterChart):
         :param y_col:
         :param size_col:
         :param three_d: Whether a 3-D version of the chart should be used
-        :param kwargs:
         """
         super().__init__(
             df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
@@ -700,7 +695,7 @@ class BubbleChart(ScatterChart):
         self.chart_data = BubbleChartData()
 
 
-class StockChart(Chart):
+class StockChart(GridChart):
 
     def __init__(
             self, *,
@@ -708,8 +703,8 @@ class StockChart(Chart):
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
             has_title: bool = False,
             has_legend: bool = True,
-            x_axis: XAxis = None,
-            y_axis: YAxis = None,
+            x_axis: ChartAxis = None,
+            y_axis: ChartAxis = None,
 
             incl_open: bool = False,
             volume: bool = False
@@ -719,7 +714,6 @@ class StockChart(Chart):
         :param df: Pandas dataframe containing data for the chart.
         :param incl_open:
         :param volume:
-        :param kwargs:
         """
         super().__init__(
             df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
@@ -737,7 +731,7 @@ class StockChart(Chart):
                 self.chart_type = XL_CHART_TYPE.STOCK_HLC,
 
 
-class SurfaceChart(Chart):
+class SurfaceChart(GridChart):
 
     def __init__(
             self, *,
@@ -745,8 +739,8 @@ class SurfaceChart(Chart):
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
             has_title: bool = False,
             has_legend: bool = True,
-            x_axis: XAxis = None,
-            y_axis: YAxis = None,
+            x_axis: ChartAxis = None,
+            y_axis: ChartAxis = None,
 
             top_view: bool = False,
             wireframe: bool = False
@@ -756,7 +750,6 @@ class SurfaceChart(Chart):
         :param df: Pandas dataframe containing data for the chart.
         :param top_view:
         :param wireframe:
-        :param kwargs:
         """
         super().__init__(
             df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
