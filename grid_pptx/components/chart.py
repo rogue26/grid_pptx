@@ -290,22 +290,47 @@ class AreaChart(GridChart):
 
         super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
 
-        if three_d:
-            if stacked:
-                if normalized:
-                    self.chart_type = XL_CHART_TYPE.THREE_D_AREA_STACKED_100
-                else:
-                    self.chart_type = XL_CHART_TYPE.THREE_D_AREA_STACKED
-            else:
-                self.chart_type = XL_CHART_TYPE.THREE_D_AREA
-        else:
-            if stacked:
-                if normalized:
-                    self.chart_type = XL_CHART_TYPE.AREA_STACKED_100
-                else:
-                    self.chart_type = XL_CHART_TYPE.AREA_STACKED
-            else:
-                self.chart_type = XL_CHART_TYPE.AREA
+        self.three_d = three_d
+        self.stacked = stacked
+        self.normalized = normalized
+
+        self.set_chart_type()
+
+    def set_chart_type(self) -> None:
+
+        # dictionary keys are tuples of booleans of the form (three_d, stacked, normalized)
+        chart_type_dict = {
+            (True, True, True): XL_CHART_TYPE.THREE_D_AREA_STACKED_100,
+            (True, True, False): XL_CHART_TYPE.THREE_D_AREA_STACKED,
+            # (True, False, True): 'not possible, normalized only applies to stacked',
+            (True, False, False): XL_CHART_TYPE.THREE_D_AREA,
+            (False, True, True): XL_CHART_TYPE.AREA_STACKED_100,
+            (False, True, False): XL_CHART_TYPE.AREA_STACKED,
+            # (False, False, True): 'not possible, normalized only applies to stacked',
+            (False, False, False): XL_CHART_TYPE.AREA,
+        }
+
+        try:
+            self.chart_type = chart_type_dict[(self.three_d, self.stacked, self.normalized)]
+        except KeyError:
+            raise ValueError('Charts cannot have normalized=True if stacked=False.')
+
+        # if self.three_d:
+        #     if self.stacked:
+        #         if self.normalized:
+        #             self.chart_type = XL_CHART_TYPE.THREE_D_AREA_STACKED_100
+        #         else:
+        #             self.chart_type = XL_CHART_TYPE.THREE_D_AREA_STACKED
+        #     else:
+        #         self.chart_type = XL_CHART_TYPE.THREE_D_AREA
+        # else:
+        #     if stacked:
+        #         if normalized:
+        #             self.chart_type = XL_CHART_TYPE.AREA_STACKED_100
+        #         else:
+        #             self.chart_type = XL_CHART_TYPE.AREA_STACKED
+        #     else:
+        #         self.chart_type = XL_CHART_TYPE.AREA
 
 
 class BarChart(GridChart):
@@ -334,47 +359,60 @@ class BarChart(GridChart):
         :param normalized:
         """
         super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
-        if three_d:
-            if shape == 'rectangle':
-                if stacked:
-                    if normalized:
-                        self.chart_type = XL_CHART_TYPE.THREE_D_BAR_STACKED_100,
-                    else:
-                        self.chart_type = XL_CHART_TYPE.THREE_D_BAR_STACKED,
-                else:
-                    self.chart_type = XL_CHART_TYPE.THREE_D_BAR_CLUSTERED,
-            elif shape == 'cone':
-                if stacked:
-                    if normalized:
-                        self.chart_type = XL_CHART_TYPE.CONE_BAR_STACKED_100,
-                    else:
-                        self.chart_type = XL_CHART_TYPE.CONE_BAR_STACKED,
-                else:
-                    self.chart_type = XL_CHART_TYPE.CONE_BAR_CLUSTERED,
-            elif shape == 'cylinder':
-                if stacked:
-                    if normalized:
-                        self.chart_type = XL_CHART_TYPE.CYLINDER_BAR_STACKED_100,
-                    else:
-                        self.chart_type = XL_CHART_TYPE.CYLINDER_BAR_STACKED,
-                else:
-                    self.chart_type = XL_CHART_TYPE.CYLINDER_BAR_CLUSTERED,
-            elif shape == 'pyramid':
-                if stacked:
-                    if normalized:
-                        self.chart_type = XL_CHART_TYPE.PYRAMID_BAR_STACKED_100,
-                    else:
-                        self.chart_type = XL_CHART_TYPE.PYRAMID_BAR_STACKED,
-                else:
-                    self.chart_type = XL_CHART_TYPE.PYRAMID_BAR_CLUSTERED,
-        else:
-            if stacked:
-                if normalized:
-                    self.chart_type = XL_CHART_TYPE.BAR_STACKED_100,
-                else:
-                    self.chart_type = XL_CHART_TYPE.BAR_STACKED,
-            else:
-                self.chart_type = XL_CHART_TYPE.BAR_CLUSTERED,
+
+        self.shape = shape
+        self.three_d = three_d
+        self.stacked = stacked
+        self.normalized = normalized
+
+        self.set_chart_type()
+
+    def set_chart_type(self) -> None:
+
+        # dictionary keys are tuples of booleans of the form (three_d, stacked, normalized)
+        chart_type_dict = {
+            ('rectangle', True, True, True): XL_CHART_TYPE.THREE_D_BAR_STACKED_100,
+            ('rectangle', True, True, False): XL_CHART_TYPE.THREE_D_BAR_STACKED,
+            # ('rectangle', True, False, True): 'not possible, normalized only applies to stacked',
+            ('rectangle', True, False, False): XL_CHART_TYPE.THREE_D_BAR_CLUSTERED,
+            ('rectangle', False, True, True): XL_CHART_TYPE.BAR_STACKED_100,
+            ('rectangle', False, True, False): XL_CHART_TYPE.BAR_STACKED,
+            # ('rectangle', False, False, True): 'not possible, normalized only applies to stacked',
+            ('rectangle', False, False, False): XL_CHART_TYPE.BAR_CLUSTERED,
+
+            ('cone', True, True, True): XL_CHART_TYPE.CONE_BAR_STACKED_100,
+            ('cone', True, True, False): XL_CHART_TYPE.CONE_BAR_STACKED,
+            # ('cone', True, False, True): 'not possible, normalized only applies to stacked',
+            ('cone', True, False, False): XL_CHART_TYPE.CONE_BAR_CLUSTERED,
+            # ('cone', False, True, True): 'not possible, cone is 3d only',
+            # ('cone', False, True, False): 'not possible, cone is 3d only',
+            # ('cone', False, False, True): 'not possible, normalized only applies to stacked',
+            # ('cone', False, False, False): 'not possible, cone is 3d only',
+
+            ('cylinder', True, True, True): XL_CHART_TYPE.CYLINDER_BAR_STACKED_100,
+            ('cylinder', True, True, False): XL_CHART_TYPE.CYLINDER_BAR_STACKED,
+            # ('cylinder', True, False, True): 'not possible, normalized only applies to stacked',
+            ('cylinder', True, False, False): XL_CHART_TYPE.CYLINDER_BAR_CLUSTERED,
+            # ('cylinder', False, True, True): 'not possible, cone is 3d only',
+            # ('cylinder', False, True, False): 'not possible, cone is 3d only',
+            # ('cylinder', False, False, True): 'not possible, normalized only applies to stacked',
+            # ('cylinder', False, False, False): 'not possible, cone is 3d only',
+
+            ('pyramid', True, True, True): XL_CHART_TYPE.PYRAMID_BAR_STACKED_100,
+            ('pyramid', True, True, False): XL_CHART_TYPE.PYRAMID_BAR_STACKED,
+            # ('pyramid', True, False, True): 'not possible, normalized only applies to stacked',
+            ('pyramid', True, False, False): XL_CHART_TYPE.PYRAMID_BAR_CLUSTERED,
+            # ('pyramid', False, True, True): 'not possible, cone is 3d only',
+            # ('pyramid', False, True, False): 'not possible, cone is 3d only',
+            # ('pyramid', False, False, True): 'not possible, normalized only applies to stacked',
+            # ('pyramid', False, False, False): 'not possible, cone is 3d only',
+        }
+
+        try:
+            self.chart_type = chart_type_dict[(self.shape, self.three_d, self.stacked, self.normalized)]
+        except KeyError:
+            # todo - add treatment for each possible reasons why the combation of attributes is not possible
+            raise ValueError('This combination of chart attributes is not possible.')
 
 
 class ColumnChart(GridChart):
@@ -425,48 +463,58 @@ class ColumnChart(GridChart):
         """
         super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
 
-        # set chart_type
-        if three_d:
-            if shape == 'rectangle':
-                if stacked:
-                    if normalized:
-                        self.chart_type = XL_CHART_TYPE.THREE_D_COLUMN_STACKED_100,
-                    else:
-                        self.chart_type = XL_CHART_TYPE.THREE_D_COLUMN_STACKED,
-                else:
-                    self.chart_type = XL_CHART_TYPE.THREE_D_COLUMN_CLUSTERED,
-            elif shape == 'cone':
-                if stacked:
-                    if normalized:
-                        self.chart_type = XL_CHART_TYPE.CONE_COL_STACKED_100,
-                    else:
-                        self.chart_type = XL_CHART_TYPE.CONE_COL_STACKED,
-                else:
-                    self.chart_type = XL_CHART_TYPE.CONE_COL_CLUSTERED,
-            elif shape == 'cylinder':
-                if stacked:
-                    if normalized:
-                        self.chart_type = XL_CHART_TYPE.CYLINDER_COL_STACKED_100,
-                    else:
-                        self.chart_type = XL_CHART_TYPE.CYLINDER_COL_STACKED,
-                else:
-                    self.chart_type = XL_CHART_TYPE.CYLINDER_COL_CLUSTERED,
-            elif shape == 'pyramid':
-                if stacked:
-                    if normalized:
-                        self.chart_type = XL_CHART_TYPE.PYRAMID_COL_STACKED_100,
-                    else:
-                        self.chart_type = XL_CHART_TYPE.PYRAMID_COL_STACKED,
-                else:
-                    self.chart_type = XL_CHART_TYPE.PYRAMID_COL_CLUSTERED,
-        else:
-            if stacked:
-                if normalized:
-                    self.chart_type = XL_CHART_TYPE.COLUMN_STACKED_100,
-                else:
-                    self.chart_type = XL_CHART_TYPE.COLUMN_STACKED,
-            else:
-                self.chart_type = XL_CHART_TYPE.COLUMN_CLUSTERED,
+        self.shape = shape
+        self.three_d = three_d
+        self.stacked = stacked
+        self.normalized = normalized
+
+        self.set_chart_type()
+
+    def set_chart_type(self):
+        # dictionary keys are tuples of booleans of the form (three_d, stacked, normalized)
+        chart_type_dict = {
+            ('rectangle', True, True, True): XL_CHART_TYPE.THREE_D_COLUMN_STACKED_100,
+            ('rectangle', True, True, False): XL_CHART_TYPE.THREE_D_COLUMN_STACKED,
+            # ('rectangle', True, False, True): 'not possible, normalized only applies to stacked',
+            ('rectangle', True, False, False): XL_CHART_TYPE.THREE_D_COLUMN_CLUSTERED,
+            ('rectangle', False, True, True): XL_CHART_TYPE.COLUMN_STACKED_100,
+            ('rectangle', False, True, False): XL_CHART_TYPE.COLUMN_STACKED,
+            # ('rectangle', False, False, True): 'not possible, normalized only applies to stacked',
+            ('rectangle', False, False, False): XL_CHART_TYPE.COLUMN_CLUSTERED,
+
+            ('cone', True, True, True): XL_CHART_TYPE.CONE_COL_STACKED_100,
+            ('cone', True, True, False): XL_CHART_TYPE.CONE_COL_STACKED,
+            # ('cone', True, False, True): 'not possible, normalized only applies to stacked',
+            ('cone', True, False, False): XL_CHART_TYPE.CONE_COL_CLUSTERED,
+            # ('cone', False, True, True): 'not possible, cone is 3d only',
+            # ('cone', False, True, False): 'not possible, cone is 3d only',
+            # ('cone', False, False, True): 'not possible, normalized only applies to stacked',
+            # ('cone', False, False, False): 'not possible, cone is 3d only',
+
+            ('cylinder', True, True, True): XL_CHART_TYPE.CYLINDER_COL_STACKED_100,
+            ('cylinder', True, True, False): XL_CHART_TYPE.CYLINDER_COL_STACKED,
+            # ('cylinder', True, False, True): 'not possible, normalized only applies to stacked',
+            ('cylinder', True, False, False): XL_CHART_TYPE.CYLINDER_COL_CLUSTERED,
+            # ('cylinder', False, True, True): 'not possible, cone is 3d only',
+            # ('cylinder', False, True, False): 'not possible, cone is 3d only',
+            # ('cylinder', False, False, True): 'not possible, normalized only applies to stacked',
+            # ('cylinder', False, False, False): 'not possible, cone is 3d only',
+
+            ('pyramid', True, True, True): XL_CHART_TYPE.PYRAMID_COL_STACKED_100,
+            ('pyramid', True, True, False): XL_CHART_TYPE.PYRAMID_COL_STACKED,
+            # ('pyramid', True, False, True): 'not possible, normalized only applies to stacked',
+            ('pyramid', True, False, False): XL_CHART_TYPE.PYRAMID_COL_CLUSTERED,
+            # ('pyramid', False, True, True): 'not possible, cone is 3d only',
+            # ('pyramid', False, True, False): 'not possible, cone is 3d only',
+            # ('pyramid', False, False, True): 'not possible, normalized only applies to stacked',
+            # ('pyramid', False, False, False): 'not possible, cone is 3d only',
+        }
+
+        try:
+            self.chart_type = chart_type_dict[(self.shape, self.three_d, self.stacked, self.normalized)]
+        except KeyError:
+            # todo - add treatment for each possible reasons why the combation of attributes is not possible
+            raise ValueError('This combination of chart attributes is not possible.')
 
 
 class LineChart(GridChart):
@@ -497,25 +545,40 @@ class LineChart(GridChart):
         """
         super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
 
-        if three_d:
-            self.chart_type = XL_CHART_TYPE.THREE_D_LINE
-        else:
-            if markers:
-                if stacked:
-                    if normalized:
-                        self.chart_type = XL_CHART_TYPE.LINE_MARKERS_STACKED_100
-                    else:
-                        self.chart_type = XL_CHART_TYPE.LINE_MARKERS_STACKED
-                else:
-                    self.chart_type = XL_CHART_TYPE.LINE_MARKERS
-            else:
-                if stacked:
-                    if normalized:
-                        self.chart_type = XL_CHART_TYPE.LINE_STACKED_100
-                    else:
-                        self.chart_type = XL_CHART_TYPE.LINE_STACKED
-                else:
-                    self.chart_type = XL_CHART_TYPE.LINE
+        self.markers = markers
+
+        self.three_d = three_d
+        self.stacked = stacked
+        self.normalized = normalized
+
+        self.set_chart_type()
+
+    def set_chart_type(self):
+        # dictionary keys are tuples of booleans of the form (markers, three_d, stacked, normalized)
+        chart_type_dict = {
+            # (True, True, True, True): '3D with markers not currently an option',
+            # (True, True, True, False): '3D with markers not currently an option',
+            # (True, True, False, True): '3D with markers not currently an option',
+            # (True, True, False, False): '3D with markers not currently an option',
+            (True, False, True, True): XL_CHART_TYPE.LINE_MARKERS_STACKED_100,
+            (True, False, True, False): XL_CHART_TYPE.LINE_MARKERS_STACKED,
+            # (True, False, False, True): 'normalized not possible unless stacked is true',
+            (True, False, False, False): XL_CHART_TYPE.LINE_MARKERS,
+            # (False, True, True, True): '3D version of this chart not currently available,
+            # (False, True, True, False): '3D version of this chart not currently available,
+            # (False, True, False, True):'3D version of this chart not currently available,
+            (False, True, False, False): XL_CHART_TYPE.THREE_D_LINE,
+            (False, False, True, True): XL_CHART_TYPE.LINE_STACKED_100,
+            (False, False, True, False): XL_CHART_TYPE.LINE_STACKED,
+            # (False, False, False, True): XL_CHART_TYPE.,
+            (False, False, False, False): XL_CHART_TYPE.LINE,
+        }
+
+        try:
+            self.chart_type = chart_type_dict[(self.markers, self.three_d, self.stacked, self.normalized)]
+        except KeyError:
+            # todo - add treatment for each possible reasons why the combation of attributes is not possible
+            raise ValueError('This combination of chart attributes is not possible.')
 
 
 class PieChart(GridChart):
