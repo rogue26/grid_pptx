@@ -17,9 +17,38 @@ if TYPE_CHECKING:
 
 
 class ChartAxis:
+    # Options for tick mark placement on either the x or y axes. Values are the constants
+    # used in the python-pptx package, but are used in the code as ``XL_CHART_TYPE.LINE``, etc.
+    tick_mark_options = {
+        'none': XL_TICK_MARK.NONE,
+        'cross': XL_TICK_MARK.CROSS,
+        'inside': XL_TICK_MARK.INSIDE,
+        'outside': XL_TICK_MARK.OUTSIDE,
+    }
+
+    inv_tick_mark_options = {v: k for k, v in tick_mark_options.items()}
+
+    tick_label_positions = {
+        'high': XL_TICK_LABEL_POSITION.HIGH,
+        'low': XL_TICK_LABEL_POSITION.LOW,
+        'next_to_axis': XL_TICK_LABEL_POSITION.NEXT_TO_AXIS,
+        'none': XL_TICK_LABEL_POSITION.NONE,
+    }
+
+    inv_tick_label_positions = {v: k for k, v in tick_label_positions.items()}
+
     def __init__(
             self, *,
-            gridchart=None,
+            gridchart: GridChart,
+            axis_type: str,
+    ) -> None:
+
+        self.gridchart = gridchart
+        self.axis_type = axis_type
+        self.axis = None  # populated later when adding the chart to the pptx slide
+
+    def add_to_slide(
+            self, *,
             minor_tick_marks: str = 'none',
             major_tick_marks: str = 'inside',
             has_minor_gridlines: bool = False,
@@ -28,7 +57,13 @@ class ChartAxis:
             tick_label_italic: bool = False,
             tick_label_fontsize: int = 16
     ) -> None:
-        self.gridchart = gridchart
+
+        # set self.axis if possible, or raise an exception if axis_type is something other than 'x' or 'y'
+        if self.axis_type == 'x':
+            self.axis = self.gridchart.chart.value_axis
+        elif self.axis_type == 'y':
+            self.axis = self.gridchart.chart.category_axis
+
         self.minor_tick_marks = minor_tick_marks
         self.major_tick_marks = major_tick_marks
         self.has_minor_gridlines = has_minor_gridlines
@@ -36,6 +71,62 @@ class ChartAxis:
         self.tick_label_position = tick_label_position
         self.tick_label_italic = tick_label_italic
         self.tick_label_fontsize = tick_label_fontsize
+
+    @property
+    def minor_tick_marks(self):
+        return self.inv_tick_mark_options[self.axis.minor_tick_mark]
+
+    @minor_tick_marks.setter
+    def minor_tick_marks(self, value):
+        self.axis.minor_tick_mark = self.tick_mark_options[value]
+
+    @property
+    def major_tick_marks(self):
+        return self.inv_tick_mark_options[self.axis.major_tick_mark]
+
+    @major_tick_marks.setter
+    def major_tick_marks(self, value):
+        self.axis.major_tick_mark = self.tick_mark_options[value]
+
+    @property
+    def has_minor_gridlines(self):
+        return self.axis.has_minor_gridlines
+
+    @has_minor_gridlines.setter
+    def has_minor_gridlines(self, value):
+        self.axis.has_minor_gridlines = value
+
+    @property
+    def has_major_gridlines(self):
+        return self.axis.has_major_gridlines
+
+    @has_major_gridlines.setter
+    def has_major_gridlines(self, value):
+        self.axis.has_major_gridlines = value
+
+    @property
+    def tick_label_position(self):
+        return self.inv_tick_label_positions[self.axis.tick_label_position]
+
+    @tick_label_position.setter
+    def tick_label_position(self, value):
+        self.axis.tick_label_position = self.tick_label_positions[value]
+
+    @property
+    def tick_label_italic(self):
+        return self.axis.tick_labels.font.italic
+
+    @tick_label_italic.setter
+    def tick_label_italic(self, value):
+        self.axis.tick_labels.font.italic = value
+
+    @property
+    def tick_label_fontsize(self):
+        return self.axis.tick_labels.font.size.pt
+
+    @tick_label_fontsize.setter
+    def tick_label_fontsize(self, value):
+        self.axis.tick_labels.font.size = Pt(value)
 
 
 class NewInitCaller(type):
@@ -47,6 +138,8 @@ class NewInitCaller(type):
     def __call__(cls, *args, **kwargs):
         """Called when you call MyNewClass() """
         obj = type.__call__(cls, *args, **kwargs)
+        # obj.add_to_slide()
+        # obj.set_chart_axes()
         obj.set_chart_data_type()
         obj.prep_chart_data()
         return obj
@@ -57,73 +150,50 @@ class GridChart(GridPanel, metaclass=NewInitCaller):
     Base class for all charts
     """
 
-    #: Options for tick mark placement on either the x or y axes. Values are the constants
-    #: used in the python-pptx package, but are used in the code as ``XL_CHART_TYPE.LINE``, etc.
-    tick_mark_options = {
-        'none': XL_TICK_MARK.NONE,
-        'cross': XL_TICK_MARK.CROSS,
-        'inside': XL_TICK_MARK.INSIDE,
-        'outside': XL_TICK_MARK.OUTSIDE,
-    }
-
-    tick_label_positions = {
-        'high': XL_TICK_LABEL_POSITION.HIGH,
-        'low': XL_TICK_LABEL_POSITION.LOW,
-        'next_to_axis': XL_TICK_LABEL_POSITION.NEXT_TO_AXIS,
-        'none': XL_TICK_LABEL_POSITION.NONE,
-    }
-
     def __init__(
             self, *,
             df: pd.DataFrame,
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
-            has_title: bool = False,
-            has_legend: bool = True,
-            x_axis: ChartAxis = None,
-            y_axis: ChartAxis = None
+            title: str = None,
+            has_legend: bool = True
     ) -> None:
         """
 
         :param df: Pandas dataframe containing data for the chart.
         :param chart_data:
-        :param chart_type:
-        :param has_title:
+        :param title:
         :param has_legend:
-        :param x_axis:
-        :param y_axis:
         """
         super().__init__()
 
         self.df = df
         self.chart_data = chart_data
         self.chart_type = None  # initialized in subclasses -- here as a placeholder
+        self.chart = None
+        self.x_axis = None
+        self.y_axis = None
 
         # default chart parameters
-        self.has_title = has_title
+        self._title = title
         self.has_legend = has_legend
         self.smooth_lines = False
 
-        if x_axis is None:
-            self.x_axis = ChartAxis(gridchart=self)
-        elif isinstance(x_axis, ChartAxis):
-            self.x_axis = x_axis
-            self.x_axis.gridchart = self
-        else:
-            raise ValueError('x_axis must be an instance of ChartAxis or left blank.')
+        self.x_axis = ChartAxis(gridchart=self, axis_type='x')
+        self.y_axis = ChartAxis(gridchart=self, axis_type='y')
 
-        if y_axis is None:
-            self.y_axis = ChartAxis(gridchart=self)
-        elif isinstance(y_axis, ChartAxis):
-            self.y_axis = y_axis
-            self.y_axis.gridchart = self
-        else:
-            raise ValueError('y_axis must be an instance of ChartAxis or left blank.')
+    @property
+    def title(self):
+        return self.chart.chart_title.text_frame.text
 
-    def evaluate_dataframe(self):
-        return None
+    @title.setter
+    def title(self, value):
+        self.chart.chart_title.text_frame.text = value
 
     def set_chart_data_type(self) -> None:
         self.chart_data = CategoryChartData()
+
+    def evaluate_dataframe(self):
+        return None
 
     def prep_chart_data(self) -> None:
         """
@@ -140,68 +210,57 @@ class GridChart(GridPanel, metaclass=NewInitCaller):
         :param gridslide:
         :return:
         """
+
         slide = gridslide.slide
 
-        # For some chart types, XL_CHART_TYPE.<chart type> returns an EnumValue object that is all that is needed.
-        # Sometimes, it returns a tuple with one integer
-
-        chart_rendered = False
         try:
-            chart = slide.shapes.add_chart(
+            # For some chart types, XL_CHART_TYPE.<chart type> returns a tuple with one integer. For these, we need
+            # the zeroth element of the tuple
+
+            self.chart = slide.shapes.add_chart(
                 self.chart_type[0], self.x, self.y, self.cx, self.cy, self.chart_data
             ).chart
 
-            chart_rendered = True
+            self.title = self._title
+            self.chart.has_legend = self.has_legend
+            self.chart.series[0].smooth = self.smooth_lines
+
+            self.x_axis.add_to_slide()
+            self.y_axis.add_to_slide()
+
         except TypeError:
-            chart = slide.shapes.add_chart(
+            # For other chart types, XL_CHART_TYPE.<chart type> returns an EnumValue object that is all that is needed.
+            # Taking the zeroth element will throw a TypeError, which is caught here
+            self.chart = slide.shapes.add_chart(
                 self.chart_type, self.x, self.y, self.cx, self.cy, self.chart_data
             ).chart
 
-            chart_rendered = True
+            self.chart.chart_title.text_frame.text = self.title
+            self.chart.has_legend = self.has_legend
+            self.chart.series[0].smooth = self.smooth_lines
+
+            self.x_axis.add_to_slide()
+            self.y_axis.add_to_slide()
 
         except NotImplementedError as ne:
-            # not all chart types are implemented in python-pptx
+
+            # Some chart types are not yet implemented in python-pptx. In those situations, attempting to add
+            # the chart type to the slide will throw a NotImplementedError, which is caught here. For more info, see:
             # https://python-pptx.readthedocs.io/en/latest/dev/analysis/cht-chart-overview.html
 
-            chart = slide.shapes.add_shape(
+            # for charts that are not implemented, a rectangle will be added to the slide with the error message
+            # to alert the user to modify their chart choice.
+            self.chart = slide.shapes.add_shape(
                 MSO_AUTO_SHAPE_TYPE.RECTANGLE, self.x, self.y, self.cx, self.cy
             )
 
-            # configure text
-            p = chart.text_frame.paragraphs[0]
+            # configure text for the rectangle
+            p = self.chart.text_frame.paragraphs[0]
             p.alignment = PP_PARAGRAPH_ALIGNMENT.CENTER
             run = p.add_run()
-            run.text = str(ne)
+            run.text = str(ne)  # text of the rectangle is the error message
             font = run.font
             font.size = Pt(10)
-
-        if chart_rendered:
-            # format chart
-            chart.has_title = self.has_title
-            chart.has_legend = self.has_legend
-            chart.series[0].smooth = self.smooth_lines
-
-            # format y-axis
-            y_axis = chart.value_axis
-            y_axis.minor_tick_mark = self.tick_mark_options[self.x_minor_tick_marks]
-            y_axis.major_tick_mark = self.tick_mark_options[self.x_major_tick_marks]
-            y_axis.has_minor_gridlines = self.x_has_minor_gridlines
-            y_axis.has_major_gridlines = self.x_has_major_gridlines
-            y_axis.tick_label_position = self.tick_label_positions[self.x_tick_label_position]
-            y_axis.tick_labels.font.italic = self.y_tick_label_italic
-            y_axis.tick_labels.font.size = Pt(self.y_tick_label_fontsize)
-
-            # format x-axis
-            x_axis = chart.category_axis
-            x_axis.minor_tick_mark = self.tick_mark_options[self.y_minor_tick_marks]
-            x_axis.major_tick_mark = self.tick_mark_options[self.y_major_tick_marks]
-            x_axis.has_minor_gridlines = self.y_has_minor_gridlines
-            x_axis.has_major_gridlines = self.y_has_major_gridlines
-            x_axis.tick_label_position = self.tick_label_positions[self.y_tick_label_position]
-            x_axis.tick_labels.font.italic = self.x_tick_label_italic
-            x_axis.tick_labels.font.size = Pt(self.x_tick_label_fontsize)
-
-            # x_axis.tick_labels.number_format = '0%'
 
 
 class AreaChart(GridChart):
@@ -213,10 +272,8 @@ class AreaChart(GridChart):
             self, *,
             df: pd.DataFrame,
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
-            has_title: bool = False,
+            title: str = None,
             has_legend: bool = True,
-            x_axis: ChartAxis = None,
-            y_axis: ChartAxis = None,
 
             three_d: bool = False,
             stacked: bool = False,
@@ -229,12 +286,9 @@ class AreaChart(GridChart):
         :param stacked:
         :param normalized: Whether values should be scaled such that they sum to 100%. Only applicable \
                 if ``stacked=TRUE``.
-        :param kwargs:
         """
 
-        super().__init__(
-            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
-        )
+        super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
 
         if three_d:
             if stacked:
@@ -263,10 +317,8 @@ class BarChart(GridChart):
             self, *,
             df: pd.DataFrame,
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
-            has_title: bool = False,
+            title: str = None,
             has_legend: bool = True,
-            x_axis: ChartAxis = None,
-            y_axis: ChartAxis = None,
 
             three_d: bool = False,
             shape: str = 'rectangle',
@@ -280,12 +332,8 @@ class BarChart(GridChart):
         :param shape:
         :param stacked:
         :param normalized:
-        :param kwargs:
         """
-        super().__init__(
-            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
-        )
-
+        super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
         if three_d:
             if shape == 'rectangle':
                 if stacked:
@@ -356,10 +404,8 @@ class ColumnChart(GridChart):
             self, *,
             df: pd.DataFrame,
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
-            has_title: bool = False,
+            title: str = None,
             has_legend: bool = True,
-            x_axis: ChartAxis = None,
-            y_axis: ChartAxis = None,
 
             three_d: bool = False,
             shape='rectangle',
@@ -370,19 +416,14 @@ class ColumnChart(GridChart):
 
         :param df: Pandas dataframe containing data for the chart.
         :param chart_data:
-        :param has_title:
+        :param title:
         :param has_legend:
-        :param x_axis:
-        :param y_axis:
         :param three_d: Whether a 3-D version of the chart should be used
         :param shape:
         :param stacked:
         :param normalized:
-        :param kwargs:
         """
-        super().__init__(
-            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
-        )
+        super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
 
         # set chart_type
         if three_d:
@@ -434,10 +475,8 @@ class LineChart(GridChart):
             self, *,
             df: pd.DataFrame,
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
-            has_title: bool = False,
+            title: str = None,
             has_legend: bool = True,
-            x_axis: ChartAxis = None,
-            y_axis: ChartAxis = None,
 
             three_d: bool = False,
             markers: bool = False,
@@ -448,19 +487,15 @@ class LineChart(GridChart):
 
         :param df: Pandas dataframe containing data for the chart.
         :param chart_data:
-        :param has_title:
+        :param title:
         :param has_legend:
-        :param x_axis:
-        :param y_axis:
 
         :param three_d: Whether a 3-D version of the chart should be used
         :param markers:
         :param stacked:
         :param normalized:
         """
-        super().__init__(
-            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
-        )
+        super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
 
         if three_d:
             self.chart_type = XL_CHART_TYPE.THREE_D_LINE
@@ -489,10 +524,8 @@ class PieChart(GridChart):
             self, *,
             df: pd.DataFrame,
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
-            has_title: bool = False,
+            title: str = None,
             has_legend: bool = True,
-            x_axis: ChartAxis = None,
-            y_axis: ChartAxis = None,
 
             three_d: bool = False,
             doughnut: bool = False,
@@ -504,19 +537,15 @@ class PieChart(GridChart):
 
         :param df: Pandas dataframe containing data for the chart.
         :param chart_data:
-        :param has_title:
+        :param title:
         :param has_legend:
-        :param x_axis:
-        :param y_axis:
         :param three_d: Whether a 3-D version of the chart should be used
         :param doughnut:
         :param exploded:
         :param compound:
         :param compound_type:
         """
-        super().__init__(
-            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
-        )
+        super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
 
         if three_d:
             if exploded:
@@ -547,10 +576,8 @@ class RadarChart(GridChart):
             self, *,
             df: pd.DataFrame,
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
-            has_title: bool = False,
+            title: str = None,
             has_legend: bool = True,
-            x_axis: ChartAxis = None,
-            y_axis: ChartAxis = None,
 
             filled: bool = False,
             markers: bool = False
@@ -561,9 +588,7 @@ class RadarChart(GridChart):
         :param filled:
         :param markers:
         """
-        super().__init__(
-            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
-        )
+        super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
 
         if filled:
             self.chart_type = XL_CHART_TYPE.RADAR_FILLED
@@ -579,10 +604,8 @@ class ScatterChart(GridChart):
             self, *,
             df: pd.DataFrame,
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
-            has_title: bool = False,
+            title: str = None,
             has_legend: bool = True,
-            x_axis: ChartAxis = None,
-            y_axis: ChartAxis = None,
 
             x_col: str,
             y_col: str,
@@ -599,9 +622,7 @@ class ScatterChart(GridChart):
         :param markers:
         :param smooth:
         """
-        super().__init__(
-            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
-        )
+        super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
 
         self.axis_cols = [x_col, y_col]
 
@@ -662,10 +683,8 @@ class BubbleChart(ScatterChart):
             self, *,
             df: pd.DataFrame,
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
-            has_title: bool = False,
+            title: str = None,
             has_legend: bool = True,
-            x_axis: ChartAxis = None,
-            y_axis: ChartAxis = None,
 
             x_col: str,
             y_col: str,
@@ -681,7 +700,8 @@ class BubbleChart(ScatterChart):
         :param three_d: Whether a 3-D version of the chart should be used
         """
         super().__init__(
-            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
+            df=df, chart_data=chart_data, title=title, has_legend=has_legend, x_col=x_col,
+            y_col=y_col
         )
 
         self.axis_cols = [x_col, y_col, size_col]
@@ -701,10 +721,8 @@ class StockChart(GridChart):
             self, *,
             df: pd.DataFrame,
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
-            has_title: bool = False,
+            title: str = None,
             has_legend: bool = True,
-            x_axis: ChartAxis = None,
-            y_axis: ChartAxis = None,
 
             incl_open: bool = False,
             volume: bool = False
@@ -716,7 +734,7 @@ class StockChart(GridChart):
         :param volume:
         """
         super().__init__(
-            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
+            df=df, chart_data=chart_data, title=title, has_legend=has_legend,
         )
 
         if incl_open:  #: note: "incl_open" was used instead of "open" to avoid shadowing builtin "open"
@@ -737,10 +755,8 @@ class SurfaceChart(GridChart):
             self, *,
             df: pd.DataFrame,
             chart_data: Union[CategoryChartData, XyChartData, BubbleChartData] = None,
-            has_title: bool = False,
+            title: str = None,
             has_legend: bool = True,
-            x_axis: ChartAxis = None,
-            y_axis: ChartAxis = None,
 
             top_view: bool = False,
             wireframe: bool = False
@@ -751,9 +767,7 @@ class SurfaceChart(GridChart):
         :param top_view:
         :param wireframe:
         """
-        super().__init__(
-            df=df, chart_data=chart_data, has_title=has_title, has_legend=has_legend, x_axis=x_axis, y_axis=y_axis
-        )
+        super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
 
         if top_view:
             if wireframe:
