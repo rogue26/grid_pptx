@@ -178,6 +178,9 @@ class GridChart(GridPanel, metaclass=NewInitCaller):
         self.has_legend = has_legend
         self.smooth_lines = False
 
+        self.add_axes()
+
+    def add_axes(self):
         self.x_axis = ChartAxis(gridchart=self, axis_type='x')
         self.y_axis = ChartAxis(gridchart=self, axis_type='y')
 
@@ -204,6 +207,10 @@ class GridChart(GridPanel, metaclass=NewInitCaller):
         for column in self.df.columns:
             self.chart_data.add_series(column, self.df[column])
 
+    def _add_axes_to_slide(self):
+        self.x_axis.add_to_slide()
+        self.y_axis.add_to_slide()
+
     def add_to_slide(self, gridslide: GridSlide) -> None:
         """
 
@@ -225,8 +232,7 @@ class GridChart(GridPanel, metaclass=NewInitCaller):
             self.chart.has_legend = self.has_legend
             self.chart.series[0].smooth = self.smooth_lines
 
-            self.x_axis.add_to_slide()
-            self.y_axis.add_to_slide()
+            self._add_axes_to_slide()
 
         except TypeError:
             # For other chart types, XL_CHART_TYPE.<chart type> returns an EnumValue object that is all that is needed.
@@ -239,8 +245,7 @@ class GridChart(GridPanel, metaclass=NewInitCaller):
             self.chart.has_legend = self.has_legend
             self.chart.series[0].smooth = self.smooth_lines
 
-            self.x_axis.add_to_slide()
-            self.y_axis.add_to_slide()
+            self._add_axes_to_slide()
 
         except NotImplementedError as ne:
 
@@ -594,7 +599,7 @@ class PieChart(GridChart):
             doughnut: bool = False,
             exploded: bool = False,
             compound: bool = False,
-            compound_type: str = 'bar_of_pie'
+            compound_type: str = None
     ) -> None:
         """
 
@@ -610,27 +615,57 @@ class PieChart(GridChart):
         """
         super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
 
-        if three_d:
-            if exploded:
-                self.chart_type = XL_CHART_TYPE.THREE_D_PIE_EXPLODED
-            else:
-                self.chart_type = XL_CHART_TYPE.THREE_D_PIE
-        else:
-            if doughnut:
-                if exploded:
-                    self.chart_type = XL_CHART_TYPE.DOUGHNUT_EXPLODED
-                else:
-                    self.chart_type = XL_CHART_TYPE.DOUGHNUT
-            else:
-                if compound:
-                    if compound_type == 'bar_of_pie':
-                        self.chart_type = XL_CHART_TYPE.BAR_OF_PIE
-                    elif compound_type == 'pie_of_pie':
-                        self.chart_type = XL_CHART_TYPE.PIE_OF_PIE
-                elif exploded:
-                    self.chart_type = XL_CHART_TYPE.PIE_EXPLODED
-                else:
-                    self.chart_type = XL_CHART_TYPE.PIE
+        self.three_d = three_d
+        self.doughnut = doughnut
+        self.exploded = exploded
+        self.compound = compound
+        self.compound_type = compound_type
+
+        self.set_chart_type()
+
+    def add_axes(self):
+        return None
+
+    def _add_axes_to_slide(self):
+        return None
+
+    def set_chart_type(self):
+        # dictionary keys are tuples of booleans of the form (three_d, exploded, doughnut, compound, compound_type)
+        chart_type_dict = {
+            # (True, True, True, True, 'bar_of_pie'): 'This version of this chart not currently available.',
+            # (True, True, True, True, 'pie_of_pie'): 'This version of this chart not currently available.',
+            # (True, True, True, False, None): 'This version of this chart not currently available.',
+            # (True, True, False, True, 'bar_of_pie'): 'This version of this chart not currently available.',
+            # (True, True, False, True, 'pie_of_pie'): 'This version of this chart not currently available.',
+            (True, True, False, False, None): XL_CHART_TYPE.THREE_D_PIE_EXPLODED,
+            # (True, False, True, True, 'bar_of_pie'): 'This version of this chart not currently available.',
+            # (True, False, True, True, 'pie_of_pie'): 'This version of this chart not currently available.',
+            # (True, False, True, False, None): 'This version of this chart not currently available.',
+            # (True, False, False, True, 'bar_of_pie'): 'This version of this chart not currently available.',
+            # (True, False, False, True, 'pie_of_pie'): 'This version of this chart not currently available.',
+            (True, False, False, False, None): XL_CHART_TYPE.THREE_D_PIE,
+            # (False, True, True, True, 'bar_of_pie'): 'This version of this chart not currently available.',
+            # (False, True, True, True, 'pie_of_pie'): 'This version of this chart not currently available.',
+            (False, True, True, False, None): XL_CHART_TYPE.DOUGHNUT_EXPLODED,
+            # (False, True, False, True, 'bar_of_pie'): 'This version of this chart not currently available.',
+            # (False, True, False, True, 'pie_of_pie'): 'This version of this chart not currently available.',
+            (False, True, False, False, None): XL_CHART_TYPE.PIE_EXPLODED,
+            # (False, False, True, True, 'bar_of_pie'): 'This version of this chart not currently available.',
+            # (False, False, True, True, 'pie_of_pie'): 'This version of this chart not currently available.',
+            (False, False, True, False, None): XL_CHART_TYPE.DOUGHNUT,
+            (False, False, False, True, 'bar_of_pie'): XL_CHART_TYPE.BAR_OF_PIE,
+            (False, False, False, True, 'pie_of_pie'): XL_CHART_TYPE.PIE_OF_PIE,
+            (False, False, False, False, None): XL_CHART_TYPE.PIE,
+
+        }
+
+        try:
+            self.chart_type = chart_type_dict[
+                (self.three_d, self.exploded, self.doughnut, self.compound, self.compound_type)
+            ]
+        except KeyError:
+            # todo - add treatment for each possible reasons why the combation of attributes is not possible
+            raise ValueError('This combination of chart attributes is not possible.')
 
 
 class RadarChart(GridChart):

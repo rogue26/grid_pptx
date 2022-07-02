@@ -95,7 +95,7 @@ class TestChart:
             assert all(hasattr(mychart, attr) for attr in self.list_of_attributes)
 
     def test_minor_tickmarks(self, mychart):
-        if not type(self) is TestChart:
+        if not type(self) in [TestChart, TestPieChart]:
             # setting minor_tick_marks should set the attribute for the chart on the python-pptx slide
             mychart.x_axis.minor_tick_marks = 'inside'
             assert mychart.x_axis.axis.minor_tick_mark == chart.ChartAxis.tick_mark_options['inside']
@@ -104,7 +104,7 @@ class TestChart:
             assert mychart.x_axis.minor_tick_marks == 'inside'
 
     def test_major_tickmarks(self, mychart):
-        if not type(self) is TestChart:
+        if not type(self) in [TestChart, TestPieChart]:
             # setting major_tick_marks should set the attribute for the chart on the python-pptx slide
             mychart.x_axis.major_tick_marks = 'inside'
             assert mychart.x_axis.axis.major_tick_mark == chart.ChartAxis.tick_mark_options['inside']
@@ -113,7 +113,7 @@ class TestChart:
             assert mychart.x_axis.major_tick_marks == 'inside'
 
     def test_minor_gridlines(self, mychart):
-        if not type(self) is TestChart:
+        if not type(self) in [TestChart, TestPieChart]:
             # setting minor gridlines should set the attribute for the chart on the python-pptx slide
             mychart.x_axis.has_minor_gridlines = True
             assert mychart.x_axis.axis.has_minor_gridlines is True
@@ -128,7 +128,7 @@ class TestChart:
             assert mychart.x_axis.has_minor_gridlines is False
 
     def test_major_gridlines(self, mychart):
-        if not type(self) is TestChart:
+        if not type(self) in [TestChart, TestPieChart]:
             # setting major gridlines should set the attribute for the chart on the python-pptx slide
             mychart.x_axis.has_major_gridlines = True
             assert mychart.x_axis.axis.has_major_gridlines is True
@@ -143,7 +143,7 @@ class TestChart:
             assert mychart.x_axis.has_major_gridlines is False
 
     def test_tick_label_position(self, mychart):
-        if not type(self) is TestChart:
+        if not type(self) in [TestChart, TestPieChart]:
             # setting minor_tick_marks should set the attribute for the chart on the python-pptx slide
             mychart.x_axis.tick_label_position = 'high'
             assert mychart.x_axis.axis.tick_label_position == chart.ChartAxis.tick_label_positions['high']
@@ -152,7 +152,7 @@ class TestChart:
             assert mychart.x_axis.tick_label_position == 'high'
 
     def test_tick_label_italic(self, mychart):
-        if not type(self) is TestChart:
+        if not type(self) in [TestChart, TestPieChart]:
             # setting tick_label_italic should set the attribute for the chart on the python-pptx slide
             mychart.x_axis.tick_label_italic = True
             assert mychart.x_axis.axis.tick_labels.font.italic is True
@@ -166,7 +166,7 @@ class TestChart:
             assert mychart.x_axis.tick_label_italic is False
 
     def test_tick_label_fontsize(self, mychart):
-        if not type(self) is TestChart:
+        if not type(self) in [TestChart, TestPieChart]:
             # setting tick_label_italic should set the attribute for the chart on the python-pptx slide
             mychart.x_axis.tick_label_fontsize = 10
             assert mychart.x_axis.axis.tick_labels.font.size.pt == 10
@@ -503,7 +503,6 @@ class TestBarChart(TestChart):
             assert False
 
 
-#
 class TestColumnChart(TestChart):
     chartclass = chart.ColumnChart
 
@@ -674,12 +673,12 @@ class TestColumnChart(TestChart):
             assert False
 
 
-# class TestPieChart(TestChart):
-#     chartclass = chart.PieChart
-#
-#
-class TestRadarChart(TestChart):
-    chartclass = chart.RadarChart
+class TestPieChart(TestChart):
+    chartclass = chart.PieChart
+
+
+# class TestRadarChart(TestChart):
+#     chartclass = chart.RadarChart
 
 # class TestScatterChart(TestChart):
 #     chartclass = chart.ScatterChart
