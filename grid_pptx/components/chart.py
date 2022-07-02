@@ -598,7 +598,6 @@ class PieChart(GridChart):
             three_d: bool = False,
             doughnut: bool = False,
             exploded: bool = False,
-            compound: bool = False,
             compound_type: str = None
     ) -> None:
         """
@@ -618,7 +617,6 @@ class PieChart(GridChart):
         self.three_d = three_d
         self.doughnut = doughnut
         self.exploded = exploded
-        self.compound = compound
         self.compound_type = compound_type
 
         self.set_chart_type()
@@ -630,38 +628,37 @@ class PieChart(GridChart):
         return None
 
     def set_chart_type(self):
-        # dictionary keys are tuples of booleans of the form (three_d, exploded, doughnut, compound, compound_type)
+        # dictionary keys are tuples of booleans of the form (three_d, exploded, doughnut, compound_type)
         chart_type_dict = {
-            # (True, True, True, True, 'bar_of_pie'): 'This version of this chart not currently available.',
-            # (True, True, True, True, 'pie_of_pie'): 'This version of this chart not currently available.',
-            # (True, True, True, False, None): 'This version of this chart not currently available.',
-            # (True, True, False, True, 'bar_of_pie'): 'This version of this chart not currently available.',
-            # (True, True, False, True, 'pie_of_pie'): 'This version of this chart not currently available.',
-            (True, True, False, False, None): XL_CHART_TYPE.THREE_D_PIE_EXPLODED,
-            # (True, False, True, True, 'bar_of_pie'): 'This version of this chart not currently available.',
-            # (True, False, True, True, 'pie_of_pie'): 'This version of this chart not currently available.',
-            # (True, False, True, False, None): 'This version of this chart not currently available.',
-            # (True, False, False, True, 'bar_of_pie'): 'This version of this chart not currently available.',
-            # (True, False, False, True, 'pie_of_pie'): 'This version of this chart not currently available.',
-            (True, False, False, False, None): XL_CHART_TYPE.THREE_D_PIE,
-            # (False, True, True, True, 'bar_of_pie'): 'This version of this chart not currently available.',
-            # (False, True, True, True, 'pie_of_pie'): 'This version of this chart not currently available.',
-            (False, True, True, False, None): XL_CHART_TYPE.DOUGHNUT_EXPLODED,
-            # (False, True, False, True, 'bar_of_pie'): 'This version of this chart not currently available.',
-            # (False, True, False, True, 'pie_of_pie'): 'This version of this chart not currently available.',
-            (False, True, False, False, None): XL_CHART_TYPE.PIE_EXPLODED,
-            # (False, False, True, True, 'bar_of_pie'): 'This version of this chart not currently available.',
-            # (False, False, True, True, 'pie_of_pie'): 'This version of this chart not currently available.',
-            (False, False, True, False, None): XL_CHART_TYPE.DOUGHNUT,
-            (False, False, False, True, 'bar_of_pie'): XL_CHART_TYPE.BAR_OF_PIE,
-            (False, False, False, True, 'pie_of_pie'): XL_CHART_TYPE.PIE_OF_PIE,
-            (False, False, False, False, None): XL_CHART_TYPE.PIE,
-
+            # (True, True, True, 'bar_of_pie'): 'This version of this chart not currently available.',
+            # (True, True, True, 'pie_of_pie'): 'This version of this chart not currently available.',
+            # (True, True, True, None): 'This version of this chart not currently available.',
+            # (True, True, False, 'bar_of_pie'): 'This version of this chart not currently available.',
+            # (True, True, False, 'pie_of_pie'): 'This version of this chart not currently available.',
+            (True, True, False, None): XL_CHART_TYPE.THREE_D_PIE_EXPLODED,
+            # (True, False, True, 'bar_of_pie'): 'This version of this chart not currently available.',
+            # (True, False, True, 'pie_of_pie'): 'This version of this chart not currently available.',
+            # (True, False, True, None): 'This version of this chart not currently available.',
+            # (True, False, False, 'bar_of_pie'): 'This version of this chart not currently available.',
+            # (True, False, False, 'pie_of_pie'): 'This version of this chart not currently available.',
+            (True, False, False, None): XL_CHART_TYPE.THREE_D_PIE,
+            # (False, True, True, 'bar_of_pie'): 'This version of this chart not currently available.',
+            # (False, True, True, 'pie_of_pie'): 'This version of this chart not currently available.',
+            (False, True, True, None): XL_CHART_TYPE.DOUGHNUT_EXPLODED,
+            # (False, True, False, 'bar_of_pie'): 'This version of this chart not currently available.',
+            # (False, True, False, 'pie_of_pie'): 'This version of this chart not currently available.',
+            (False, True, False, None): XL_CHART_TYPE.PIE_EXPLODED,
+            # (False, False, True, 'bar_of_pie'): 'This version of this chart not currently available.',
+            # (False, False, True, 'pie_of_pie'): 'This version of this chart not currently available.',
+            (False, False, True, None): XL_CHART_TYPE.DOUGHNUT,
+            (False, False, False, 'bar_of_pie'): XL_CHART_TYPE.BAR_OF_PIE,
+            (False, False, False, 'pie_of_pie'): XL_CHART_TYPE.PIE_OF_PIE,
+            (False, False, False, None): XL_CHART_TYPE.PIE,
         }
 
         try:
             self.chart_type = chart_type_dict[
-                (self.three_d, self.exploded, self.doughnut, self.compound, self.compound_type)
+                (self.three_d, self.exploded, self.doughnut, self.compound_type)
             ]
         except KeyError:
             # todo - add treatment for each possible reasons why the combation of attributes is not possible
@@ -688,12 +685,25 @@ class RadarChart(GridChart):
         """
         super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
 
-        if filled:
-            self.chart_type = XL_CHART_TYPE.RADAR_FILLED
-        elif markers:
-            self.chart_type = XL_CHART_TYPE.RADAR_MARKERS
-        else:
-            self.chart_type = XL_CHART_TYPE.RADAR
+        self.filled = filled
+        self.markers = markers
+
+        self.set_chart_type()
+
+    def set_chart_type(self):
+        # dictionary keys are tuples of booleans of the form (filled, markers)
+        chart_type_dict = {
+            # (True, True): 'This version of this chart not currently available.',
+            (True, False): XL_CHART_TYPE.RADAR_FILLED,
+            (False, True): XL_CHART_TYPE.RADAR_MARKERS,
+            (False, False): XL_CHART_TYPE.RADAR,
+        }
+
+        try:
+            self.chart_type = chart_type_dict[(self.filled, self.markers)]
+        except KeyError:
+            # todo - add treatment for each possible reasons why the combation of attributes is not possible
+            raise ValueError('This combination of chart attributes is not possible.')
 
 
 class ScatterChart(GridChart):

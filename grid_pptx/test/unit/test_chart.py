@@ -9,6 +9,26 @@ from grid_pptx import GridPresentation, Row
 
 
 @pytest.fixture(params=[True, False])
+def filled(request):
+    return request.param
+
+
+@pytest.fixture(params=[None, 'bar_of_pie', 'pie_of_pie'])
+def compound_type(request):
+    return request.param
+
+
+@pytest.fixture(params=[True, False])
+def doughnut(request):
+    return request.param
+
+
+@pytest.fixture(params=[True, False])
+def exploded(request):
+    return request.param
+
+
+@pytest.fixture(params=[True, False])
 def markers(request):
     return request.param
 
@@ -676,13 +696,160 @@ class TestColumnChart(TestChart):
 class TestPieChart(TestChart):
     chartclass = chart.PieChart
 
+    def test_set_chart_type(self, main_df, three_d, exploded, doughnut, compound_type):
 
-# class TestRadarChart(TestChart):
-#     chartclass = chart.RadarChart
+        if three_d and exploded and doughnut and compound_type == 'bar_of_pie':
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif three_d and exploded and doughnut and compound_type == 'pie_of_pie':
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif three_d and exploded and doughnut and compound_type is None:
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif three_d and exploded and not doughnut and compound_type == 'bar_of_pie':
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif three_d and exploded and not doughnut and compound_type == 'pie_of_pie':
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif three_d and exploded and not doughnut and compound_type is None:
+            c = self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+            assert c.chart_type == XL_CHART_TYPE.THREE_D_PIE_EXPLODED
+
+        elif three_d and not exploded and doughnut and compound_type == 'bar_of_pie':
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif three_d and not exploded and doughnut and compound_type == 'pie_of_pie':
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif three_d and not exploded and doughnut and compound_type is None:
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif three_d and not exploded and not doughnut and compound_type == 'bar_of_pie':
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif three_d and not exploded and not doughnut and compound_type == 'pie_of_pie':
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif three_d and not exploded and not doughnut and compound_type is None:
+            c = self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+            assert c.chart_type == XL_CHART_TYPE.THREE_D_PIE
+
+        elif not three_d and exploded and doughnut and compound_type == 'bar_of_pie':
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif not three_d and exploded and doughnut and compound_type == 'pie_of_pie':
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif not three_d and exploded and doughnut and compound_type is None:
+            c = self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+            assert c.chart_type == XL_CHART_TYPE.DOUGHNUT_EXPLODED
+
+        elif not three_d and exploded and not doughnut and compound_type == 'bar_of_pie':
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif not three_d and exploded and not doughnut and compound_type == 'pie_of_pie':
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif not three_d and exploded and not doughnut and compound_type is None:
+            c = self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+            assert c.chart_type == XL_CHART_TYPE.PIE_EXPLODED
+
+        elif not three_d and not exploded and doughnut and compound_type == 'bar_of_pie':
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif not three_d and not exploded and doughnut and compound_type == 'pie_of_pie':
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+
+        elif not three_d and not exploded and doughnut and compound_type is None:
+            c = self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+            assert c.chart_type == XL_CHART_TYPE.DOUGHNUT
+
+        elif not three_d and not exploded and not doughnut and compound_type == 'bar_of_pie':
+            c = self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+            assert c.chart_type == XL_CHART_TYPE.BAR_OF_PIE
+
+        elif not three_d and not exploded and not doughnut and compound_type == 'pie_of_pie':
+            c = self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+            assert c.chart_type == XL_CHART_TYPE.PIE_OF_PIE
+
+        elif not three_d and not exploded and not doughnut and compound_type is None:
+            c = self.chartclass(df=main_df, three_d=three_d, exploded=exploded, doughnut=doughnut,
+                                compound_type=compound_type)
+            assert c.chart_type == XL_CHART_TYPE.PIE
+
+        else:
+            print('test not accounting for all scenarios.')
+            assert False
+
+
+class TestRadarChart(TestChart):
+    chartclass = chart.RadarChart
+
+    def test_set_chart_type(self, main_df, filled, markers):
+
+        if filled and markers:
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, filled=filled, markers=markers)
+
+        elif filled and not markers:
+            c = self.chartclass(df=main_df, filled=filled, markers=markers)
+            assert c.chart_type == XL_CHART_TYPE.RADAR_FILLED
+
+        elif not filled and markers:
+            c = self.chartclass(df=main_df, filled=filled, markers=markers)
+            assert c.chart_type == XL_CHART_TYPE.RADAR_MARKERS
+
+        elif not filled and not markers:
+            c = self.chartclass(df=main_df, filled=filled, markers=markers)
+            assert c.chart_type == XL_CHART_TYPE.RADAR
+        else:
+            print('test not accounting for all scenarios.')
+            assert False
+
 
 # class TestScatterChart(TestChart):
 #     chartclass = chart.ScatterChart
-
 
 # class TestBubbleChart(TestChart):
 #     chartclass = chart.BubbleChart
