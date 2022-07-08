@@ -794,7 +794,7 @@ class ScatterChart(GridChart):
     #         raise ValueError('The dataframe\'s columns must have no more than 2 levels.')
 
 
-class BubbleChart(ScatterChart):
+class BubbleChart(GridChart):
 
     def __init__(
             self, *,
@@ -816,14 +816,19 @@ class BubbleChart(ScatterChart):
         :param size_col:
         :param three_d: Whether a 3-D version of the chart should be used
         """
-        super().__init__(
-            df=df, chart_data=chart_data, title=title, has_legend=has_legend, x_col=x_col,
-            y_col=y_col
-        )
+        super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
+
+        self.x_col = x_col
+        self.y_col = y_col
+        self.size_col = size_col
+        self.three_d = three_d
 
         self.axis_cols = [x_col, y_col, size_col]
 
-        if three_d:
+        self.set_chart_type()
+
+    def set_chart_type(self):
+        if self.three_d:
             self.chart_type = XL_CHART_TYPE.BUBBLE_THREE_D_EFFECT
         else:
             self.chart_type = XL_CHART_TYPE.BUBBLE
@@ -854,16 +859,24 @@ class StockChart(GridChart):
             df=df, chart_data=chart_data, title=title, has_legend=has_legend,
         )
 
-        if incl_open:  #: note: "incl_open" was used instead of "open" to avoid shadowing builtin "open"
-            if volume:
+        self.incl_open = incl_open
+        self.volume = volume
+
+        self.set_chart_type()
+
+    def set_chart_type(self):
+
+        if self.incl_open:  #: note: "incl_open" was used instead of "open" to avoid shadowing builtin "open"
+            if self.volume:
                 self.chart_type = XL_CHART_TYPE.STOCK_VOHLC
             else:
-                self.chart_type = XL_CHART_TYPE.STOCK_OHLC,
+                self.chart_type = XL_CHART_TYPE.STOCK_OHLC
         else:
-            if volume:
+            if self.volume:
                 self.chart_type = XL_CHART_TYPE.STOCK_VHLC
             else:
-                self.chart_type = XL_CHART_TYPE.STOCK_HLC,
+                self.chart_type = XL_CHART_TYPE.STOCK_HLC
+
 
 
 class SurfaceChart(GridChart):
@@ -886,13 +899,19 @@ class SurfaceChart(GridChart):
         """
         super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
 
-        if top_view:
-            if wireframe:
+        self.top_view = top_view
+        self.wireframe = wireframe
+
+        self.set_chart_type()
+
+    def set_chart_type(self):
+        if self.top_view:
+            if self.wireframe:
                 self.chart_type = XL_CHART_TYPE.SURFACE_TOP_VIEW_WIREFRAME
             else:
                 self.chart_type = XL_CHART_TYPE.SURFACE_TOP_VIEW
         else:
-            if wireframe:
+            if self.wireframe:
                 self.chart_type = XL_CHART_TYPE.SURFACE_WIREFRAME
             else:
                 self.chart_type = XL_CHART_TYPE.SURFACE

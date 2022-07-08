@@ -8,6 +8,26 @@ from grid_pptx.components import chart
 from grid_pptx import GridPresentation, Row
 
 
+@pytest.fixture(params=[True, False])
+def top_view(request):
+    return request.param
+
+
+@pytest.fixture(params=[True, False])
+def wireframe(request):
+    return request.param
+
+
+@pytest.fixture(params=[True, False])
+def incl_open(request):
+    return request.param
+
+
+@pytest.fixture(params=[True, False])
+def volume(request):
+    return request.param
+
+
 @pytest.fixture(params=[None, 'straight', 'smooth'])
 def lines(request):
     return request.param
@@ -96,23 +116,28 @@ class TestChart:
     chartclass = chart.GridChart
 
     @pytest.fixture
+    def not_implemented(self):
+        return [TestStockChart, TestSurfaceChart]
+
+    @pytest.fixture
     def mygridpresentation(self):
         if not type(self) == TestChart:
             return GridPresentation()
 
     @pytest.fixture
-    def mychart(self, main_df, mygridpresentation):
+    def mychart(self, main_df, mygridpresentation, not_implemented):
 
-        print(type(self))
-        if type(self) is TestScatterChart:
-            print('type(self) is TestScatterChart')
+        if type(self) == TestScatterChart:
             c = self.chartclass(df=main_df, title='chart title', x_col='a', y_col='b')
-            print('c = ', c)
-            print('c.x_axis = ', c.x_axis)
             design = Row(12, c)
             mygridpresentation.add_slide(layout_num=5, design=design, title='testing')
 
-        elif not type(self) is TestChart:
+        elif type(self) == TestBubbleChart:
+            c = self.chartclass(df=main_df, title='chart title', x_col='a', y_col='b', size_col='c')
+            design = Row(12, c)
+            mygridpresentation.add_slide(layout_num=5, design=design, title='testing')
+
+        elif not type(self) == TestChart and not type(self) in not_implemented:
             c = self.chartclass(df=main_df, title='chart title')
             design = Row(12, c)
             mygridpresentation.add_slide(layout_num=5, design=design, title='testing')
@@ -122,18 +147,18 @@ class TestChart:
 
         return c
 
-    def test_chart_has_expected_attr(self, mychart):
+    def test_chart_has_expected_attr(self, mychart, not_implemented):
         """ Test that instantiated AreaChart object has (at a minimum) all expected attributes
 
         :param mychart: PyTest fixture with an instantiated Chart object
         """
 
-        if not type(self) is TestChart:
+        if not type(self) is TestChart and type(self) not in not_implemented:
             print('Missing attributes: ', *[_ for _ in self.list_of_attributes if _ not in mychart.__dict__])
             assert all(hasattr(mychart, attr) for attr in self.list_of_attributes)
 
-    def test_minor_tickmarks(self, mychart):
-        if not type(self) in [TestChart, TestPieChart]:
+    def test_minor_tickmarks(self, mychart, not_implemented):
+        if not type(self) in [TestChart, TestPieChart] and type(self) not in not_implemented:
             # setting minor_tick_marks should set the attribute for the chart on the python-pptx slide
             mychart.x_axis.minor_tick_marks = 'inside'
             assert mychart.x_axis.axis.minor_tick_mark == chart.ChartAxis.tick_mark_options['inside']
@@ -141,8 +166,8 @@ class TestChart:
             # accessing the minor_tick_marks should return the corresponding value of the python-pptx chart
             assert mychart.x_axis.minor_tick_marks == 'inside'
 
-    def test_major_tickmarks(self, mychart):
-        if not type(self) in [TestChart, TestPieChart]:
+    def test_major_tickmarks(self, mychart, not_implemented):
+        if not type(self) in [TestChart, TestPieChart] and type(self) not in not_implemented:
             # setting major_tick_marks should set the attribute for the chart on the python-pptx slide
             mychart.x_axis.major_tick_marks = 'inside'
             assert mychart.x_axis.axis.major_tick_mark == chart.ChartAxis.tick_mark_options['inside']
@@ -150,8 +175,8 @@ class TestChart:
             # accessing the major_tick_marks should return the corresponding value of the python-pptx chart
             assert mychart.x_axis.major_tick_marks == 'inside'
 
-    def test_minor_gridlines(self, mychart):
-        if not type(self) in [TestChart, TestPieChart]:
+    def test_minor_gridlines(self, mychart, not_implemented):
+        if not type(self) in [TestChart, TestPieChart] and type(self) not in not_implemented:
             # setting minor gridlines should set the attribute for the chart on the python-pptx slide
             mychart.x_axis.has_minor_gridlines = True
             assert mychart.x_axis.axis.has_minor_gridlines is True
@@ -165,8 +190,8 @@ class TestChart:
             assert mychart.x_axis.axis.has_minor_gridlines is False
             assert mychart.x_axis.has_minor_gridlines is False
 
-    def test_major_gridlines(self, mychart):
-        if not type(self) in [TestChart, TestPieChart]:
+    def test_major_gridlines(self, mychart, not_implemented):
+        if not type(self) in [TestChart, TestPieChart] and type(self) not in not_implemented:
             # setting major gridlines should set the attribute for the chart on the python-pptx slide
             mychart.x_axis.has_major_gridlines = True
             assert mychart.x_axis.axis.has_major_gridlines is True
@@ -180,8 +205,8 @@ class TestChart:
             assert mychart.x_axis.axis.has_major_gridlines is False
             assert mychart.x_axis.has_major_gridlines is False
 
-    def test_tick_label_position(self, mychart):
-        if not type(self) in [TestChart, TestPieChart]:
+    def test_tick_label_position(self, mychart, not_implemented):
+        if not type(self) in [TestChart, TestPieChart] and type(self) not in not_implemented:
             # setting minor_tick_marks should set the attribute for the chart on the python-pptx slide
             mychart.x_axis.tick_label_position = 'high'
             assert mychart.x_axis.axis.tick_label_position == chart.ChartAxis.tick_label_positions['high']
@@ -189,8 +214,8 @@ class TestChart:
             # accessing the minor_tick_marks should return the corresponding value of the python-pptx chart
             assert mychart.x_axis.tick_label_position == 'high'
 
-    def test_tick_label_italic(self, mychart):
-        if not type(self) in [TestChart, TestPieChart]:
+    def test_tick_label_italic(self, mychart, not_implemented):
+        if not type(self) in [TestChart, TestPieChart] and type(self) not in not_implemented:
             # setting tick_label_italic should set the attribute for the chart on the python-pptx slide
             mychart.x_axis.tick_label_italic = True
             assert mychart.x_axis.axis.tick_labels.font.italic is True
@@ -203,8 +228,8 @@ class TestChart:
             assert mychart.x_axis.axis.tick_labels.font.italic is False
             assert mychart.x_axis.tick_label_italic is False
 
-    def test_tick_label_fontsize(self, mychart):
-        if not type(self) in [TestChart, TestPieChart]:
+    def test_tick_label_fontsize(self, mychart, not_implemented):
+        if not type(self) in [TestChart, TestPieChart] and type(self) not in not_implemented:
             # setting tick_label_italic should set the attribute for the chart on the python-pptx slide
             mychart.x_axis.tick_label_fontsize = 10
             assert mychart.x_axis.axis.tick_labels.font.size.pt == 10
@@ -212,8 +237,8 @@ class TestChart:
             # accessing the tick_label_italic attribute should return the corresponding value of the python-pptx chart
             assert mychart.x_axis.tick_label_fontsize == 10
 
-    def test_chart_title(self, mychart):
-        if not type(self) is TestChart:
+    def test_chart_title(self, mychart, not_implemented):
+        if not type(self) is TestChart and type(self) not in not_implemented:
             # setting title should set the attribute for the chart on the python-pptx slide
             mychart.title = 'new chart title'
             assert mychart.chart.chart_title.text_frame.text == 'new chart title'
@@ -226,6 +251,7 @@ class TestChart:
 
     # def test_evaluate_dataframe(self):
     #     assert True
+    #
     #
     # def test_set_chart_data_type(self):
     #     assert True
@@ -902,13 +928,69 @@ class TestScatterChart(TestChart):
             print('test not accounting for all scenarios.')
             assert False
 
-# class TestBubbleChart(TestChart):
-#     chartclass = chart.BubbleChart
+
+class TestBubbleChart(TestChart):
+    chartclass = chart.BubbleChart
+    list_of_attributes = [
+        'df', 'chart_type', 'chart_data', 'x_axis', 'y_axis', 'x_col', 'y_col', 'size_col'
+    ]
+
+    def test_set_chart_type(self, main_df, three_d):
+
+        if three_d is True:
+            c = self.chartclass(df=main_df, x_col='a', y_col='b', size_col='c', three_d=three_d)
+            assert c.chart_type == XL_CHART_TYPE.BUBBLE_THREE_D_EFFECT
+
+        elif three_d is False:
+            c = self.chartclass(df=main_df, x_col='a', y_col='b', size_col='c', three_d=three_d)
+            assert c.chart_type == XL_CHART_TYPE.BUBBLE
+
+        else:
+            print('test not accounting for all scenarios.')
+            assert False
 
 
-# class TestStockChart(TestChart):
-#     chartclass = chart.StockChart
+class TestStockChart(TestChart):
+    chartclass = chart.StockChart
+
+    def test_set_chart_type(self, main_df, incl_open, volume):
+
+        if incl_open and volume:
+            c = self.chartclass(df=main_df, incl_open=incl_open, volume=volume)
+            assert c.chart_type == XL_CHART_TYPE.STOCK_VOHLC
+        elif incl_open and not volume:
+            c = self.chartclass(df=main_df, incl_open=incl_open, volume=volume)
+            assert c.chart_type == XL_CHART_TYPE.STOCK_OHLC
+        elif not incl_open and volume:
+            c = self.chartclass(df=main_df, incl_open=incl_open, volume=volume)
+            assert c.chart_type == XL_CHART_TYPE.STOCK_VHLC
+        elif not incl_open and not volume:
+            c = self.chartclass(df=main_df, incl_open=incl_open, volume=volume)
+            assert c.chart_type == XL_CHART_TYPE.STOCK_HLC
+
+        else:
+            print('test not accounting for all scenarios.')
+            assert False
 
 
-# class TestSurfaceChart(TestChart):
-#     chartclass = chart.SurfaceChart
+class TestSurfaceChart(TestChart):
+    chartclass = chart.SurfaceChart
+
+    def test_set_chart_type(self, main_df, top_view, wireframe):
+
+        if top_view and wireframe:
+            c = self.chartclass(df=main_df, top_view=top_view, wireframe=wireframe)
+            assert c.chart_type == XL_CHART_TYPE.SURFACE_TOP_VIEW_WIREFRAME
+        elif top_view and not wireframe:
+            c = self.chartclass(df=main_df, top_view=top_view, wireframe=wireframe)
+            assert c.chart_type == XL_CHART_TYPE.SURFACE_TOP_VIEW
+        elif not top_view and wireframe:
+            c = self.chartclass(df=main_df, top_view=top_view, wireframe=wireframe)
+            assert c.chart_type == XL_CHART_TYPE.SURFACE_WIREFRAME
+        elif not top_view and not wireframe:
+            c = self.chartclass(df=main_df, top_view=top_view, wireframe=wireframe)
+            assert c.chart_type == XL_CHART_TYPE.SURFACE
+
+        else:
+            print('test not accounting for all scenarios.')
+            assert False
