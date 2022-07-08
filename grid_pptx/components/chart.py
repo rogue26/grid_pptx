@@ -138,8 +138,7 @@ class NewInitCaller(type):
     def __call__(cls, *args, **kwargs):
         """Called when you call MyNewClass() """
         obj = type.__call__(cls, *args, **kwargs)
-        # obj.add_to_slide()
-        # obj.set_chart_axes()
+        obj.add_axes()
         obj.set_chart_data_type()
         obj.prep_chart_data()
         return obj
@@ -178,7 +177,8 @@ class GridChart(GridPanel, metaclass=NewInitCaller):
         self.has_legend = has_legend
         self.smooth_lines = False
 
-        self.add_axes()
+        # add axes objects
+        # self.add_axes()
 
     def add_axes(self):
         self.x_axis = ChartAxis(gridchart=self, axis_type='x')
@@ -717,9 +717,8 @@ class ScatterChart(GridChart):
 
             x_col: str,
             y_col: str,
-            lines: bool = False,
-            markers: bool = False,
-            smooth: bool = False
+            lines: str = None,  # options are None, 'straight', 'smooth'
+            markers: bool = True
     ) -> None:
         """
 
@@ -728,61 +727,71 @@ class ScatterChart(GridChart):
         :param y_col:
         :param lines:
         :param markers:
-        :param smooth:
+        :param smooth_lines:
         """
         super().__init__(df=df, chart_data=chart_data, title=title, has_legend=has_legend)
 
+        self.x_col = x_col
+        self.y_col = y_col
+        self.lines = lines
+        self.markers = markers
+
         self.axis_cols = [x_col, y_col]
 
-        if lines:
-            if markers:
-                if smooth:
-                    self.chart_type = XL_CHART_TYPE.XY_SCATTER_SMOOTH
-                else:
-                    self.chart_type = XL_CHART_TYPE.XY_SCATTER_LINES
-            else:
-                if smooth:
-                    self.chart_type = XL_CHART_TYPE.XY_SCATTER_SMOOTH_NO_MARKERS
-                else:
-                    self.chart_type = XL_CHART_TYPE.XY_SCATTER_LINES_NO_MARKERS
-        else:
-            self.chart_type = XL_CHART_TYPE.XY_SCATTER,
+        self.set_chart_type()
+
+    def set_chart_type(self):
+        # dictionary keys are tuples of booleans of the form (lines, markers)
+        chart_type_dict = {
+            (None, True): XL_CHART_TYPE.XY_SCATTER,
+            # (None, False): 'This version of this chart not currently available.',
+            ('straight', True): XL_CHART_TYPE.XY_SCATTER_LINES,
+            ('straight', False): XL_CHART_TYPE.XY_SCATTER_LINES_NO_MARKERS,
+            ('smooth', True): XL_CHART_TYPE.XY_SCATTER_SMOOTH,
+            ('smooth', False): XL_CHART_TYPE.XY_SCATTER_SMOOTH_NO_MARKERS,
+        }
+
+        try:
+            self.chart_type = chart_type_dict[(self.lines, self.markers)]
+        except KeyError:
+            # todo - add treatment for each possible reasons why the combation of attributes is not possible
+            raise ValueError('This combination of chart attributes is not possible.')
 
     def set_chart_data_type(self) -> None:
         self.chart_data = XyChartData()
 
-    def prep_chart_data(self) -> None:
-        """
-
-        :return:
-        """
-
-        # If multi-index, how many levels, xy or bubble plot must have either 1 or 2 levels to columns
-        if self.df.columns.nlevels == 1:
-            # only one series in dataset
-            series = self.chart_data.add_series('Data')
-            for index, row in self.df.iterrows():
-                series.add_data_point(*[row[_] for _ in self.axis_cols])
-
-        elif self.df.columns.nlevels == 2:
-            # potentially multiple series in dataset
-
-            # get the list of all the axis columns (including size for bubble charts). Grid_pptx will assume that
-            # any level 1 values in the MultiIndex that have all three of these columns should be treated as
-            # separate series.
-            for series_candidate in self.df.columns.get_level_values(0).unique():
-                axis_vals_in_series = self.df.loc[:, (series_candidate, slice(None))] \
-                    .columns.get_level_values(1).tolist()
-
-                # if all vals in the axis_vals_list are included in the axis_vals_in_series, then assume this
-                # is a series and add the series and the values
-                if all(_ in axis_vals_in_series for _ in self.axis_cols):
-                    series = self.chart_data.add_series(series_candidate)
-                    for index, row in self.df.iterrows():
-                        series.add_data_point(*[(series_candidate, row[_]) for _ in self.axis_cols])
-
-        else:
-            raise ValueError('The dataframe\'s columns must have no more than 2 levels.')
+    # def prep_chart_data(self) -> None:
+    #     """
+    #
+    #     :return:
+    #     """
+    #
+    #     # If multi-index, how many levels, xy or bubble plot must have either 1 or 2 levels to columns
+    #     if self.df.columns.nlevels == 1:
+    #         # only one series in dataset
+    #         series = self.chart_data.add_series('Data')
+    #         for index, row in self.df.iterrows():
+    #             series.add_data_point(*[row[_] for _ in self.axis_cols])
+    #
+    #     elif self.df.columns.nlevels == 2:
+    #         # potentially multiple series in dataset
+    #
+    #         # get the list of all the axis columns (including size for bubble charts). Grid_pptx will assume that
+    #         # any level 1 values in the MultiIndex that have all three of these columns should be treated as
+    #         # separate series.
+    #         for series_candidate in self.df.columns.get_level_values(0).unique():
+    #             axis_vals_in_series = self.df.loc[:, (series_candidate, slice(None))] \
+    #                 .columns.get_level_values(1).tolist()
+    #
+    #             # if all vals in the axis_vals_list are included in the axis_vals_in_series, then assume this
+    #             # is a series and add the series and the values
+    #             if all(_ in axis_vals_in_series for _ in self.axis_cols):
+    #                 series = self.chart_data.add_series(series_candidate)
+    #                 for index, row in self.df.iterrows():
+    #                     series.add_data_point(*[(series_candidate, row[_]) for _ in self.axis_cols])
+    #
+    #     else:
+    #         raise ValueError('The dataframe\'s columns must have no more than 2 levels.')
 
 
 class BubbleChart(ScatterChart):

@@ -8,6 +8,11 @@ from grid_pptx.components import chart
 from grid_pptx import GridPresentation, Row
 
 
+@pytest.fixture(params=[None, 'straight', 'smooth'])
+def lines(request):
+    return request.param
+
+
 @pytest.fixture(params=[True, False])
 def filled(request):
     return request.param
@@ -92,17 +97,30 @@ class TestChart:
 
     @pytest.fixture
     def mygridpresentation(self):
-        if not type(self) is TestChart:
+        if not type(self) == TestChart:
             return GridPresentation()
 
     @pytest.fixture
     def mychart(self, main_df, mygridpresentation):
-        if not type(self) is TestChart:
+
+        print(type(self))
+        if type(self) is TestScatterChart:
+            print('type(self) is TestScatterChart')
+            c = self.chartclass(df=main_df, title='chart title', x_col='a', y_col='b')
+            print('c = ', c)
+            print('c.x_axis = ', c.x_axis)
+            design = Row(12, c)
+            mygridpresentation.add_slide(layout_num=5, design=design, title='testing')
+
+        elif not type(self) is TestChart:
             c = self.chartclass(df=main_df, title='chart title')
             design = Row(12, c)
             mygridpresentation.add_slide(layout_num=5, design=design, title='testing')
 
-            return c
+        else:
+            c = None
+
+        return c
 
     def test_chart_has_expected_attr(self, mychart):
         """ Test that instantiated AreaChart object has (at a minimum) all expected attributes
@@ -848,8 +866,41 @@ class TestRadarChart(TestChart):
             assert False
 
 
-# class TestScatterChart(TestChart):
-#     chartclass = chart.ScatterChart
+class TestScatterChart(TestChart):
+    chartclass = chart.ScatterChart
+    list_of_attributes = [
+        'df', 'chart_type', 'chart_data', 'x_axis', 'y_axis', 'x_col', 'y_col'
+    ]
+
+    def test_set_chart_type(self, main_df, lines, markers):
+
+        if lines is None and markers:
+            c = self.chartclass(df=main_df, x_col='a', y_col='b', lines=lines, markers=markers)
+            assert c.chart_type == XL_CHART_TYPE.XY_SCATTER
+
+        elif lines is None and not markers:
+            with pytest.raises(ValueError, match=r"This combination of chart attributes is not possible."):
+                self.chartclass(df=main_df, x_col='a', y_col='b', lines=lines, markers=markers)
+
+        elif lines == 'straight' and markers:
+            c = self.chartclass(df=main_df, x_col='a', y_col='b', lines=lines, markers=markers)
+            assert c.chart_type == XL_CHART_TYPE.XY_SCATTER_LINES
+
+        elif lines == 'straight' and not markers:
+            c = self.chartclass(df=main_df, x_col='a', y_col='b', lines=lines, markers=markers)
+            assert c.chart_type == XL_CHART_TYPE.XY_SCATTER_LINES_NO_MARKERS
+
+        elif lines == 'smooth' and markers:
+            c = self.chartclass(df=main_df, x_col='a', y_col='b', lines=lines, markers=markers)
+            assert c.chart_type == XL_CHART_TYPE.XY_SCATTER_SMOOTH
+
+        elif lines == 'smooth' and not markers:
+            c = self.chartclass(df=main_df, x_col='a', y_col='b', lines=lines, markers=markers)
+            assert c.chart_type == XL_CHART_TYPE.XY_SCATTER_SMOOTH_NO_MARKERS
+
+        else:
+            print('test not accounting for all scenarios.')
+            assert False
 
 # class TestBubbleChart(TestChart):
 #     chartclass = chart.BubbleChart
