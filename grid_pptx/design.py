@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Union
 
 from .components.panel import GridPanel
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from grid_pptx import GridSlide
 
 

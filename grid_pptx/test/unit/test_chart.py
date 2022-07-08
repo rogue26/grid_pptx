@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 
 from pptx.enum.chart import XL_CHART_TYPE
+from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
 
 from grid_pptx.components import chart
 from grid_pptx import GridPresentation, Row
@@ -126,6 +127,9 @@ class TestChart:
 
     @pytest.fixture
     def mychart(self, main_df, mygridpresentation, not_implemented):
+        # Note - this also has the effect of testing that these types of charts DO NOT raise a
+        # NotImplemented error. Below, we'll only test that the chart types in the not_implemented
+        # list DO raise an error
 
         if type(self) == TestScatterChart:
             c = self.chartclass(df=main_df, title='chart title', x_col='a', y_col='b')
@@ -146,6 +150,15 @@ class TestChart:
             c = None
 
         return c
+
+    def test_not_implemented_error(self, main_df, mygridpresentation, not_implemented):
+        if type(self) in not_implemented:
+            # with pytest.raises(NotImplementedError):
+            c = self.chartclass(df=main_df, title='chart title')
+            design = Row(12, c)
+            mygridpresentation.add_slide(layout_num=5, design=design, title='testing')
+
+            assert c.chart.shape_type.__str__() == 'AUTO_SHAPE (1)'
 
     def test_chart_has_expected_attr(self, mychart, not_implemented):
         """ Test that instantiated AreaChart object has (at a minimum) all expected attributes
@@ -350,7 +363,7 @@ class TestLineChart(TestChart):
                                     normalized=normalized)
                 assert c.chart_type == XL_CHART_TYPE.LINE
 
-        else:
+        else:  # pragma: no cover
             print('test not accounting for all scenarios.')
             assert False
 
@@ -392,7 +405,7 @@ class TestAreaChart(TestChart):
             c = self.chartclass(df=main_df, three_d=three_d, stacked=stacked, normalized=normalized)
             assert c.chart_type == XL_CHART_TYPE.AREA
 
-        else:
+        else:  # pragma: no cover
             print('test not accounting for all scenarios.')
             assert False
 
@@ -562,7 +575,7 @@ class TestBarChart(TestChart):
                     self.chartclass(df=main_df, shape=chart_shape, three_d=three_d, stacked=stacked,
                                     normalized=normalized)
 
-        else:
+        else:  # pragma: no cover
             print('test not accounting for all scenarios.')
             assert False
 
@@ -732,7 +745,7 @@ class TestColumnChart(TestChart):
                     self.chartclass(df=main_df, shape=chart_shape, three_d=three_d, stacked=stacked,
                                     normalized=normalized)
 
-        else:
+        else:  # pragma: no cover
             print('test not accounting for all scenarios.')
             assert False
 
@@ -862,7 +875,7 @@ class TestPieChart(TestChart):
                                 compound_type=compound_type)
             assert c.chart_type == XL_CHART_TYPE.PIE
 
-        else:
+        else:  # pragma: no cover
             print('test not accounting for all scenarios.')
             assert False
 
@@ -887,7 +900,7 @@ class TestRadarChart(TestChart):
         elif not filled and not markers:
             c = self.chartclass(df=main_df, filled=filled, markers=markers)
             assert c.chart_type == XL_CHART_TYPE.RADAR
-        else:
+        else:  # pragma: no cover
             print('test not accounting for all scenarios.')
             assert False
 
@@ -924,7 +937,7 @@ class TestScatterChart(TestChart):
             c = self.chartclass(df=main_df, x_col='a', y_col='b', lines=lines, markers=markers)
             assert c.chart_type == XL_CHART_TYPE.XY_SCATTER_SMOOTH_NO_MARKERS
 
-        else:
+        else:  # pragma: no cover
             print('test not accounting for all scenarios.')
             assert False
 
@@ -945,7 +958,7 @@ class TestBubbleChart(TestChart):
             c = self.chartclass(df=main_df, x_col='a', y_col='b', size_col='c', three_d=three_d)
             assert c.chart_type == XL_CHART_TYPE.BUBBLE
 
-        else:
+        else:  # pragma: no cover
             print('test not accounting for all scenarios.')
             assert False
 
@@ -968,7 +981,7 @@ class TestStockChart(TestChart):
             c = self.chartclass(df=main_df, incl_open=incl_open, volume=volume)
             assert c.chart_type == XL_CHART_TYPE.STOCK_HLC
 
-        else:
+        else:  # pragma: no cover
             print('test not accounting for all scenarios.')
             assert False
 
@@ -991,6 +1004,6 @@ class TestSurfaceChart(TestChart):
             c = self.chartclass(df=main_df, top_view=top_view, wireframe=wireframe)
             assert c.chart_type == XL_CHART_TYPE.SURFACE
 
-        else:
+        else:  # pragma: no cover
             print('test not accounting for all scenarios.')
             assert False

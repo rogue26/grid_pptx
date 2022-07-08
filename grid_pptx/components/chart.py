@@ -12,7 +12,7 @@ from pptx.util import Pt
 from .panel import GridPanel
 
 # imports for type hints that would normally cause circular imports
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from grid_pptx import GridSlide
 
 
@@ -220,52 +220,82 @@ class GridChart(GridPanel, metaclass=NewInitCaller):
 
         slide = gridslide.slide
 
+        # try:
+        #     # For some chart types, XL_CHART_TYPE.<chart type> returns a tuple with one integer. For these, we need
+        #     # the zeroth element of the tuple
+        #
+        #     self.chart = slide.shapes.add_chart(
+        #         self.chart_type[0], self.x, self.y, self.cx, self.cy, self.chart_data
+        #     ).chart
+        #
+        #     self.title = self._title
+        #     self.chart.has_legend = self.has_legend
+        #     self.chart.series[0].smooth = self.smooth_lines
+        #
+        #     self._add_axes_to_slide()
+        #
+        # except TypeError:
+        #
+        #     try:
+        #         # For other chart types, XL_CHART_TYPE.<chart type> returns an EnumValue
+        #         # object that is all that is needed.
+        #         # Taking the zeroth element will throw a TypeError, which is caught here
+        #         self.chart = slide.shapes.add_chart(
+        #             self.chart_type, self.x, self.y, self.cx, self.cy, self.chart_data
+        #         ).chart
+        #
+        #         self.title = self._title
+        #         # self.chart.chart_title.text_frame.text = self.title
+        #         self.chart.has_legend = self.has_legend
+        #         self.chart.series[0].smooth = self.smooth_lines
+        #
+        #         self._add_axes_to_slide()
+        #     except NotImplementedError as ne:
+        #         self.add_error_to_slide(gridslide, ne)
+        #
+        # except NotImplementedError as ne:
+        #     self.add_error_to_slide(gridslide, ne)
+
         try:
-            # For some chart types, XL_CHART_TYPE.<chart type> returns a tuple with one integer. For these, we need
-            # the zeroth element of the tuple
-
-            self.chart = slide.shapes.add_chart(
-                self.chart_type[0], self.x, self.y, self.cx, self.cy, self.chart_data
-            ).chart
-
-            self.title = self._title
-            self.chart.has_legend = self.has_legend
-            self.chart.series[0].smooth = self.smooth_lines
-
-            self._add_axes_to_slide()
-
-        except TypeError:
-            # For other chart types, XL_CHART_TYPE.<chart type> returns an EnumValue object that is all that is needed.
+            # For other chart types, XL_CHART_TYPE.<chart type> returns an EnumValue
+            # object that is all that is needed.
             # Taking the zeroth element will throw a TypeError, which is caught here
             self.chart = slide.shapes.add_chart(
                 self.chart_type, self.x, self.y, self.cx, self.cy, self.chart_data
             ).chart
 
-            self.chart.chart_title.text_frame.text = self.title
+            self.title = self._title
+            # self.chart.chart_title.text_frame.text = self.title
             self.chart.has_legend = self.has_legend
             self.chart.series[0].smooth = self.smooth_lines
 
             self._add_axes_to_slide()
-
         except NotImplementedError as ne:
+            self.add_error_to_slide(gridslide, ne)
 
-            # Some chart types are not yet implemented in python-pptx. In those situations, attempting to add
-            # the chart type to the slide will throw a NotImplementedError, which is caught here. For more info, see:
-            # https://python-pptx.readthedocs.io/en/latest/dev/analysis/cht-chart-overview.html
 
-            # for charts that are not implemented, a rectangle will be added to the slide with the error message
-            # to alert the user to modify their chart choice.
-            self.chart = slide.shapes.add_shape(
-                MSO_AUTO_SHAPE_TYPE.RECTANGLE, self.x, self.y, self.cx, self.cy
-            )
+    def add_error_to_slide(self, gridslide: GridSlide, ne: NotImplementedError) -> None:
 
-            # configure text for the rectangle
-            p = self.chart.text_frame.paragraphs[0]
-            p.alignment = PP_PARAGRAPH_ALIGNMENT.CENTER
-            run = p.add_run()
-            run.text = str(ne)  # text of the rectangle is the error message
-            font = run.font
-            font.size = Pt(10)
+        # Some chart types are not yet implemented in python-pptx. In those situations, attempting to add
+        # the chart type to the slide will throw a NotImplementedError, which is caught here. For more info, see:
+        # https://python-pptx.readthedocs.io/en/latest/dev/analysis/cht-chart-overview.html
+
+        # for charts that are not implemented, a rectangle will be added to the slide with the error message
+        # to alert the user to modify their chart choice.
+
+        slide = gridslide.slide
+
+        self.chart = slide.shapes.add_shape(
+            MSO_AUTO_SHAPE_TYPE.RECTANGLE, self.x, self.y, self.cx, self.cy
+        )
+
+        # configure text for the rectangle
+        p = self.chart.text_frame.paragraphs[0]
+        p.alignment = PP_PARAGRAPH_ALIGNMENT.CENTER
+        run = p.add_run()
+        run.text = str(ne)  # text of the rectangle is the error message
+        font = run.font
+        font.size = Pt(10)
 
 
 class AreaChart(GridChart):
@@ -876,7 +906,6 @@ class StockChart(GridChart):
                 self.chart_type = XL_CHART_TYPE.STOCK_VHLC
             else:
                 self.chart_type = XL_CHART_TYPE.STOCK_HLC
-
 
 
 class SurfaceChart(GridChart):

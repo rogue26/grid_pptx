@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from pptx.slide import Slide
 
 # imports for type hints that would normally cause circular imports
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from grid_pptx import Row, GridPresentation
 
 

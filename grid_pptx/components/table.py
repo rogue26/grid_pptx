@@ -7,7 +7,7 @@ from pptx.util import Pt
 from .panel import GridPanel
 
 # imports for type hints that would normally cause circular imports
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from grid_pptx.slide import GridSlide
 
 
@@ -89,14 +89,14 @@ class Table(GridPanel):
         'dark_style_2_accent_5_6': '{46F890A9-2807-4EBB-B81D-B2AA78EC7F39}',
     }
 
-    def __init__(self, df: Union[pd.DataFrame, pd.Series], style: str = 'medium_style_3_accent_1', **kwargs) -> None:
+    def __init__(self, df: Union[pd.DataFrame, pd.Series], style: str = 'medium_style_3_accent_1') -> None:
         """
 
         :param df:
         :param style:
         :param kwargs:
         """
-        super().__init__(**kwargs)
+        super().__init__()
 
         # convert df to dataframe if necessary
         if type(df) == pd.Series:
@@ -110,9 +110,9 @@ class Table(GridPanel):
         self.fontsize = 14
         self.style = style
 
-        # set any attributes that have been supplied in kwargs
-        for k, v in kwargs.items():
-            setattr(self, k, v)
+        # # set any attributes that have been supplied in kwargs
+        # for k, v in kwargs.items():
+        #     setattr(self, k, v)
 
         self.rows = len(df.index) + 1 if self.header else 0
         self.cols = len(df.columns)

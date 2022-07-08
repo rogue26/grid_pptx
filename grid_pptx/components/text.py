@@ -9,7 +9,7 @@ from .panel import GridPanel
 from grid_pptx import colors
 
 # imports for type hints that would normally cause circular imports
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from grid_pptx.slide import GridSlide
 
 
@@ -24,14 +24,13 @@ class Text(GridPanel):
         'thai_distribute': PP_PARAGRAPH_ALIGNMENT.THAI_DISTRIBUTE,
     }
 
-    def __init__(self, text: str, alignment: str = 'left', **kwargs) -> None:
+    def __init__(self, text: str, alignment: str = 'left') -> None:
         """
 
         :param text:
         :param alignment:
-        :param kwargs:
         """
-        super().__init__(**kwargs)
+        super().__init__()
 
         self.text = text
 
@@ -41,10 +40,6 @@ class Text(GridPanel):
         self.bold = False
         self.fontsize = 16
         self.alignment = alignment
-
-        # set any attributes that have been supplied in kwargs
-        for k, v in kwargs.items():
-            setattr(self, k, v)
 
     def add_to_slide(self, gridslide: GridSlide) -> None:
         """
@@ -63,14 +58,14 @@ class Text(GridPanel):
             shape.fill.background()
         else:
             shape.fill.solid()
-            shape.fill.fore_color.rgb = colors[self.fill_color]
+            shape.fill.fore_color.rgb = colors.colors[self.fill_color]
 
         # configure outline color
         if self.outline_color is None:
             shape.line.fill.background()
         else:
             shape.line.fill.solid()
-            shape.line.color.rgb = colors[self.outline_color]
+            shape.line.color.rgb = colors.colors[self.outline_color]
 
         # configure text
         p = shape.text_frame.paragraphs[0]
@@ -80,7 +75,7 @@ class Text(GridPanel):
         font = run.font
         font.size = Pt(self.fontsize)
         font.bold = self.bold
-        font.color.rgb = colors[self.fontcolor]
+        font.color.rgb = colors.colors[self.fontcolor]
 
 
 class Bullets(Text):
