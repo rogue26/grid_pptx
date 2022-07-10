@@ -1,7 +1,7 @@
-from .panel import GridPanel
+from .panel import _GridPanel
 
 
-class Image(GridPanel):
+class Image(_GridPanel):
     def __init__(self, *args, **kwargs) -> None:
         """
 

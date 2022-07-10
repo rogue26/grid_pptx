@@ -15,7 +15,7 @@ if __name__ == '__main__':  # pragma: no cover
     )
 
     chart = AreaChart(df=df, stacked=True, normalized=False)
-    table = Table(df)
+    table = Table(df=df)
     text = Text(text='some explanatory text here')
 
     design = Row(12,

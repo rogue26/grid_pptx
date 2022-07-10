@@ -1,14 +1,14 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Union
 
-from .components.panel import GridPanel
+from .components.panel import _GridPanel
 
 if TYPE_CHECKING:  # pragma: no cover
     from grid_pptx import GridSlide
 
 
-class Row(GridPanel):
-    def __init__(self, value: int, *args: Union[GridPanel, Column], **kwargs) -> None:
+class Row(_GridPanel):
+    def __init__(self, value: int, *args: Union[_GridPanel, Column], **kwargs) -> None:
         """
 
         :param value:
@@ -54,8 +54,8 @@ class Row(GridPanel):
                 left_tracker += container.width
 
 
-class Column(GridPanel):
-    def __init__(self, value: int, *args: Union[GridPanel, Row], **kwargs) -> None:
+class Column(_GridPanel):
+    def __init__(self, value: int, *args: Union[_GridPanel, Row], **kwargs) -> None:
         """
 
         :param value:

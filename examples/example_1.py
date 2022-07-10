@@ -2,17 +2,17 @@ from grid_pptx import GridPresentation, Row, Column
 from grid_pptx.components import Text
 
 if __name__ == '__main__':  # pragma: no cover
-    a = Text(text='a', outline_color='black')
-    b = Text(text='b', outline_color='black')
-    c = Text(text='c', outline_color='black')
-    d = Text(text='d', outline_color='black')
-    e = Text(text='e', outline_color='black')
-    f = Text(text='f', outline_color='black')
-    g = Text(text='g', outline_color='black')
-    h = Text(text='h', outline_color='black')
-    i = Text(text='i', outline_color='black')
-    j = Text(text='j', outline_color='black')
-    k = Text(text='k', outline_color='black')
+    a = Text(text='a', outline_color='black', shadow=False)
+    b = Text(text='b', outline_color='black', shadow=False)
+    c = Text(text='c', outline_color='black', shadow=False)
+    d = Text(text='d', outline_color='black', shadow=False)
+    e = Text(text='e', outline_color='black', shadow=False)
+    f = Text(text='f', outline_color='black', shadow=False)
+    g = Text(text='g', outline_color='black', shadow=False)
+    h = Text(text='h', outline_color='black', shadow=False)
+    i = Text(text='i', outline_color='black', shadow=False)
+    j = Text(text='j', outline_color='black', shadow=False)
+    k = Text(text='k', outline_color='black', shadow=False)
 
     design = Row(12,
                  Column(6,
